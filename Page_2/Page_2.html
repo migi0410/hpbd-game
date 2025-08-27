@@ -8,15 +8,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <img src="./assets/background.jpg" alt="Background" class="bg">
-        <h1 class="title">CHOOSE ONE</h1>
-        <div class="options">
-            <div class="card" data-page="present.html">Present</div>
-            <div class="card" data-page="memory.html">Wishes</div>
-            <div class="card" data-page="wishes.html">Memory</div>
-        </div>
+  <div class="container">
+    <img src="./assets/background.jpg" alt="Background" class="bg">
+    <h1 class="title">Choose One</h1>
+    <div class="options">
+      <div class="card" data-page="present.html">Present</div>
+      <div class="card" data-page="memory.html">Memory</div>
+      <div class="card" data-page="wishes.html">Wishes</div>
     </div>
+  </div>
 
   <!-- Nhạc nền -->
   <audio id="bg-music" src="./assets/music.mp3" autoplay loop></audio>
@@ -38,13 +38,13 @@
 
     // Click card: phát sound effect rồi chuyển trang
     document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('click', () => {
-            tapAudio.currentTime = 0;
-            tapAudio.play().catch(err => console.log(err));
-            setTimeout(() => {
-                window.location.href = card.getAttribute('data-page');
-            }, 700); // delay đủ cho sound effect ngắn
-        });
+      card.addEventListener('click', () => {
+        tapAudio.currentTime = 0;
+        tapAudio.play().catch(err => console.log(err));
+        setTimeout(() => {
+          window.location.href = card.getAttribute('data-page');
+        }, 700);
+      });
     });
   </script>
 </body>
