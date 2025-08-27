@@ -27,9 +27,9 @@ html, body {
 /* message text */
 .message {
   position: absolute;
-  top: 80%;
+  bottom: 5%; /* dùng bottom thay top để responsive hơn */
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   text-align: center;
   font-family: 'Orbitron', sans-serif;
   color: #fff;
@@ -37,65 +37,45 @@ html, body {
 }
 
 .message .hint {
-  font-size: 2vw;
-  margin-bottom: 1em;
+  font-size: 2.5vw;
+  margin-bottom: 0.5em;
   opacity: 0;
   animation: blinkHint 2s infinite;
 }
 
-.message .line1 {
-  font-size: 5vw;
+.message .line1,
+.message .line2 {
+  font-size: 6vw;
   font-weight: bold;
 }
 
-.message .line2 {
-  font-size: 5vw;
-  margin-top: 0em;
-}
-
+/* Blink animation */
 @keyframes blinkHint {
-  0%   { opacity: 0; }
-  50%  { opacity: 1; }
-  100% { opacity: 0; }
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
 }
 
 /* Media Queries */
 
-/* Tablet: màn hình <= 1024px */
+/* Tablet */
 @media (max-width: 1024px) {
-  .message .hint {
-    font-size: 3vw;
-  }
+  .message .hint { font-size: 3.5vw; }
   .message .line1,
-  .message .line2 {
-    font-size: 6vw;
-  }
+  .message .line2 { font-size: 8vw; }
 }
 
-/* Mobile lớn: màn hình <= 768px */
+/* Mobile lớn */
 @media (max-width: 768px) {
-  .message .hint {
-    font-size: 4vw;
-  }
+  .message { bottom: 12%; }
+  .message .hint { font-size: 4.5vw; }
   .message .line1,
-  .message .line2 {
-    font-size: 8vw;
-  }
-  .message {
-    top: 75%;
-  }
+  .message .line2 { font-size: 10vw; }
 }
 
-/* Mobile nhỏ: màn hình <= 480px */
+/* Mobile nhỏ */
 @media (max-width: 480px) {
-  .message .hint {
-    font-size: 5vw;
-  }
+  .message { bottom: 15%; }
+  .message .hint { font-size: 5.5vw; }
   .message .line1,
-  .message .line2 {
-    font-size: 10vw;
-  }
-  .message {
-    top: 70%;
-  }
+  .message .line2 { font-size: 12vw; }
 }
