@@ -28,7 +28,7 @@ html, body {
 .message {
   position: absolute;
   top: 80%;
-  left: 51%;
+  left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
   font-family: 'Orbitron', sans-serif;
@@ -57,4 +57,45 @@ html, body {
   0%   { opacity: 0; }
   50%  { opacity: 1; }
   100% { opacity: 0; }
+}
+
+/* Media Queries */
+
+/* Tablet: màn hình <= 1024px */
+@media (max-width: 1024px) {
+  .message .hint {
+    font-size: 3vw;
+  }
+  .message .line1,
+  .message .line2 {
+    font-size: 6vw;
+  }
+}
+
+/* Mobile lớn: màn hình <= 768px */
+@media (max-width: 768px) {
+  .message .hint {
+    font-size: 4vw;
+  }
+  .message .line1,
+  .message .line2 {
+    font-size: 8vw;
+  }
+  .message {
+    top: 75%;
+  }
+}
+
+/* Mobile nhỏ: màn hình <= 480px */
+@media (max-width: 480px) {
+  .message .hint {
+    font-size: 5vw;
+  }
+  .message .line1,
+  .message .line2 {
+    font-size: 10vw;
+  }
+  .message {
+    top: 70%;
+  }
 }

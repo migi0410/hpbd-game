@@ -1,3 +1,4 @@
+/* Desktop mặc định (màn hình lớn) */
 body, html {
   margin: 0;
   padding: 0;
@@ -29,7 +30,7 @@ body, html {
 
 .title {
   position: absolute;
-  top: 60%; /* giảm xuống cho cân hơn */
+  top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
@@ -42,7 +43,7 @@ body, html {
 
 .options {
   position: absolute;
-  top: 85%; /* đặt dưới title */
+  top: 85%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -51,7 +52,6 @@ body, html {
   font-family: 'Orbitron', sans-serif;
   z-index: 1;
 }
-
 
 .card {
   background: rgba(74, 61, 20, 0.386);
@@ -65,7 +65,6 @@ body, html {
   width: 250px;
   text-align: center;
 
-  /* Ban đầu ẩn + nhỏ */
   opacity: 0;
   transform: scale(0.8);
   transition: all 0.4s ease;
@@ -79,6 +78,57 @@ body, html {
 .card:hover {
   transform: scale(1.05);
   box-shadow: 0px 12px 25px rgba(0,0,0,0.3);
-  background: rgb(255, 255, 255);
-  color: rgb(0, 0, 0)
+  background: #fff;
+  color: #000;
+}
+
+/* Media Queries */
+
+/* Tablet: max-width 1024px */
+@media (max-width: 1024px) {
+  .title {
+    font-size: 3.5rem;
+    top: 58%;
+  }
+  .options {
+    gap: 40px;
+  }
+  .card {
+    width: 200px;
+    padding: 50px 50px;
+    font-size: 2.5rem;
+  }
+}
+
+/* Mobile lớn: max-width 768px */
+@media (max-width: 768px) {
+  .title {
+    font-size: 3rem;
+    top: 55%;
+  }
+  .options {
+    gap: 30px;
+  }
+  .card {
+    width: 160px;
+    padding: 40px 30px;
+    font-size: 2rem;
+  }
+}
+
+/* Mobile nhỏ: max-width 480px */
+@media (max-width: 480px) {
+  .title {
+    font-size: 2.2rem;
+    top: 50%;
+  }
+  .options {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .card {
+    width: 140px;
+    padding: 30px 20px;
+    font-size: 1.5rem;
+  }
 }
