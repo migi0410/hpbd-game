@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday - Page 2</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <img src="./assets/background.jpg" alt="Background" class="bg">
+        <h1 class="title">CHOOSE ONE</h1>
+        <div class="options">
+            <div class="card" data-page="present.html">Present</div>
+            <div class="card" data-page="memory.html">Wishes</div>
+            <div class="card" data-page="wishes.html">Memory</div>
+        </div>
+    </div>
+
+  <!-- Nhạc nền -->
+  <audio id="bg-music" src="./assets/music.mp3" autoplay loop></audio>
+
+  <!-- Sound effect tap -->
+  <audio id="tap-sound" src="./assets/tap.wav" preload="auto"></audio>
+
+  <script>
+    const tapAudio = document.getElementById("tap-sound");
+
+    // Fade-in card khi page load
+    window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".card").forEach((card, index) => {
+        setTimeout(() => {
+          card.classList.add("show");
+        }, index * 150);
+      });
+    });
+
+    // Click card: phát sound effect rồi chuyển trang
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', () => {
+            tapAudio.currentTime = 0;
+            tapAudio.play().catch(err => console.log(err));
+            setTimeout(() => {
+                window.location.href = card.getAttribute('data-page');
+            }, 700); // delay đủ cho sound effect ngắn
+        });
+    });
+  </script>
+</body>
+</html>

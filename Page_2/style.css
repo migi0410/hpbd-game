@@ -1,0 +1,84 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.title {
+  position: absolute;
+  top: 60%; /* giảm xuống cho cân hơn */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  color: #ffffff;
+  white-space: nowrap;
+  font-size: 4.5rem;
+  z-index: 1;
+}
+
+.options {
+  position: absolute;
+  top: 85%; /* đặt dưới title */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 60px;
+  justify-content: center;
+  font-family: 'Orbitron', sans-serif;
+  z-index: 1;
+}
+
+
+.card {
+  background: rgba(74, 61, 20, 0.386);
+  padding: 60px 60px;
+  border-radius: 20px;
+  box-shadow: 0px 8px 20px rgba(0,0,0,0.3);
+  font-size: 3rem;
+  font-weight: bold;
+  color: #fde492;
+  cursor: pointer;
+  width: 250px;
+  text-align: center;
+
+  /* Ban đầu ẩn + nhỏ */
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.4s ease;
+}
+
+.card.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 12px 25px rgba(0,0,0,0.3);
+  background: rgb(255, 255, 255);
+  color: rgb(0, 0, 0)
+}
