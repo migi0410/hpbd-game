@@ -47,16 +47,16 @@ html, body {
 
 /* Title */
 .title {
-  font-size: 8vw;
+  font-size: clamp(40px, 8vw, 120px);
   color: #fff;
   text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
-  margin-bottom: 5vh;
+  margin-bottom: 6vh;
 }
 
 /* Nút START */
 #startBtn {
-  padding: 1.5vw 4vw;
-  font-size: 4vw;
+  padding: clamp(12px, 1.5vw, 24px) clamp(24px, 4vw, 48px);
+  font-size: clamp(18px, 3vw, 36px);
   font-weight: bold;
   border: none;
   border-radius: 12px;
@@ -71,15 +71,4 @@ html, body {
   transform: scale(1.1);
   background: #fff;
   color: #000;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .title { font-size: 10vw; margin-bottom: 4vh; }
-  #startBtn { font-size: 5vw; padding: 3vw 6vw; }
-}
-
-@media (max-width: 480px) {
-  .title { font-size: 12vw; margin-bottom: 3vh; }
-  #startBtn { font-size: 6vw; padding: 4vw 8vw; }
 }

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Present Roulette</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Âm thanh -->
+  <audio id="spin-sound" src="./assets/spin.wav" preload="auto"></audio>
+  <audio id="tap-sound" src="./assets/tap.wav" preload="auto"></audio>
+  <audio id="gift-sound" src="./assets/gift.mp3" preload="auto"></audio>
+  <audio id="gold-sound" src="./assets/gold.mp3" preload="auto"></audio>
+  <audio id="gold-prize-sound" src="./assets/gold_prize.wav" preload="auto"></audio>
+  <audio id="bgm" src="./assets/bgm.wav" preload="auto" loop></audio>
+
+
+  <div class="container">
+    <!-- Background -->
+    <img src="./assets/background.jpg" alt="Background" class="bg">
+
+    <!-- Roulette -->
+    <div class="roulette-wrapper">
+      <div class="roulette">
+        <div class="items" id="items"></div>
+      </div>
+      <div class="highlight"></div>
+    </div>
+
+    <!-- Nút Spin -->
+    <div class="controls">
+      <button id="spinBtn">SPIN</button>
+    </div>
+
+    <!-- Popup kết quả -->
+    <div id="popup" class="hidden">
+      <div id="popup-content"></div>
+      <p class="tap-msg fade-in">(Tap anywhere to continue)</p>
+    </div>
+
+    <!-- Thẻ vàng -->
+    <div id="golden-card" class="hidden">
+      <img src="./assets/gold_card.jpg" alt="Golden Card">
+    </div>
+
+    <!-- Quà vàng thật -->
+    <div id="golden-gift" class="hidden">
+      <img src="./assets/mg.jpg" alt="Golden Gift">
+    </div>
+  </div>
+
+  <script>
+    const itemsContainer = document.getElementById("items");
+    const spinBtn = document.getElementById("spinBtn");
+    const popup = document.getElementById("popup");
+    const popupContent = document.getElementById("popup-content");
+    const goldenCard = document.getElementById("golden-card");
+    const goldenGift = document.getElementById("golden-gift");
+    const rouletteWrapper = document.querySelector(".roulette-wrapper");
+
+    // Âm thanh
+    const spinSound = document.getElementById("spin-sound");
+    const tapSound = document.getElementById("tap-sound");
+    const goldSound = document.getElementById("gold-sound");
+    const goldprizeSound = document.getElementById("gold-prize-sound");
+    const giftSound = document.getElementById("gift-sound");
+    const bgm = document.getElementById("bgm");
+
+    // Set âm lượng nhỏ hơn spin
+    bgm.volume = 0.5;   // 20% âm lượng
+    spinSound.volume = 1.0; // giữ nguyên tiếng spin to hơn
+
+    // Tự động phát khi load
+    window.addEventListener("load", () => {
+      bgm.play().catch(() => {
+        // Một số trình duyệt chặn autoplay, chờ user interaction
+        document.body.addEventListener("click", () => {
+          bgm.play();
+        }, { once: true });
+      });
+    });
+
+    let spinCount = 0;
+    const maxSpins = 5;
+    const itemWidth = 310;
+    let currentOffset = 0;
+
+    // Deck: 2 fail, 2 gift, 1 gold
+    let deck = [
+      { type: "fail" },
+      { type: "fail" },
+      { type: "gift", img: "./assets/kiem.jpg", name: "Phong Than Kiem" },
+      { type: "gift", img: "./assets/ao.jpg", name: "Long Bao" },
+      { type: "gold", img: "./assets/mg.jpg", name: "MG Strike Freedom Fullburst-Mode" }
+    ];
+
+    function generateItems() {
+      itemsContainer.innerHTML = "";
+      for (let i = 0; i < 1000; i++) {
+        const div = document.createElement("div");
+        div.className = "item";
+        const img = document.createElement("img");
+        img.src = "./assets/black_card.jpg";
+        div.appendChild(img);
+        itemsContainer.appendChild(div);
+      }
+    }
+    generateItems();
+
+    function spin() {
+      if (spinCount >= maxSpins) return;
+
+      spinBtn.disabled = true;
+      spinCount++;
+
+      // Phát âm thanh spin
+      spinSound.currentTime = 0;
+      spinSound.play();
+
+      // Lấy outcome
+      let outcome;
+      if (spinCount < maxSpins) {
+        const pool = deck.filter(c => c.type !== "gold");
+        const idx = Math.floor(Math.random() * pool.length);
+        outcome = pool[idx];
+        deck.splice(deck.indexOf(outcome), 1);
+      } else {
+        outcome = deck.find(c => c.type === "gold");
+      }
+
+      // Quay roulette
+      const steps = 10 + Math.floor(Math.random() * 10);
+      currentOffset -= steps * itemWidth;
+      const centerOffset = itemWidth / 2;
+      itemsContainer.style.transition = "transform 3s cubic-bezier(0.25, 1, 0.5, 1)";
+      itemsContainer.style.transform = `translateX(${currentOffset + centerOffset}px)`;
+
+      // Hiển thị kết quả sau khi quay xong
+      setTimeout(() => {
+        if (outcome.type === "gift") {
+          popupContent.innerHTML = `
+              <p class="popup-name fade-in">${outcome.name || "Gift"}</p>
+              <img src="${outcome.img}" alt="${outcome.name}" class="fade-in">
+          `;
+          popup.classList.remove("hidden");
+          popup.classList.add("fade-in");
+          giftSound.currentTime = 0;
+          giftSound.play();
+        } else if (outcome.type === "fail") {
+          popupContent.innerHTML = `<p style="color:white;font-size:28px;" class="fade-in">Better luck next time !</p>`;
+          popup.classList.remove("hidden");
+          popup.classList.add("fade-in");
+        } else if (outcome.type === "gold") {
+          goldenCard.classList.remove("hidden");
+          rouletteWrapper.classList.add("hidden");
+          spinBtn.style.display = "none";
+
+          popup.classList.add("gold-popup");
+          popupContent.innerHTML = `<p style="color:yellow;font-size:32px;" class="fade-in">Congratulations! You got the golden card!</p>`;
+          popup.querySelector(".tap-msg").textContent = "(Tap to open golden card)";
+          popup.classList.remove("hidden");
+          popup.classList.add("fade-in");
+          bgm.pause();
+          bgm.currentTime = 0;
+          goldSound.currentTime = 0;
+          goldSound.play();
+        }
+      }, 3100);
+    }
+
+    popup.addEventListener("click", () => {
+      // Phát âm thanh tap
+      tapSound.currentTime = 0;
+      tapSound.play();
+
+      popup.classList.add("fade-out");
+      popup.classList.remove("fade-in");
+
+      setTimeout(() => {
+        popup.classList.add("hidden");
+        popup.classList.remove("fade-out");
+        popupContent.innerHTML = "";
+
+        if (!goldenCard.classList.contains("hidden")) {
+          goldenCard.classList.add("shake");
+          setTimeout(() => {
+            goldenCard.classList.add("fade-out");
+            setTimeout(() => {
+              goldenCard.classList.add("hidden");
+              goldenCard.classList.remove("shake", "fade-out");
+              goldenGift.classList.remove("hidden");
+              goldenGift.classList.add("show");
+
+              goldprizeSound.currentTime = 0;
+              goldprizeSound.play();
+
+              const giftName = document.createElement("p");
+              giftName.textContent = "MG Strike Freedom Fullburst-Mode";
+              giftName.classList.add("popup-name", "fade-in");
+              goldenGift.appendChild(giftName);
+
+              // 👉 Thêm dòng chữ Tap to return
+              const returnMsg = document.createElement("p");
+              returnMsg.textContent = "(Tap anywhere to return to menu)";
+              returnMsg.classList.add("return-msg", "fade-in");
+              document.body.appendChild(returnMsg);
+
+              // Lắng nghe click ở bất kỳ đâu
+              function returnHandler() {
+                window.location.href = "../Page_2/Page_2.html";
+              }
+              document.addEventListener("click", returnHandler, { once: true });
+              }, 1000);
+          }, 2000);
+          spinBtn.disabled = true;
+        } else {
+          spinBtn.disabled = false;
+        }
+      }, 500);
+    });
+
+    spinBtn.addEventListener("click", spin);
+  </script>
+</body>
+</html>

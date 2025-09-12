@@ -1,0 +1,185 @@
+body {
+  margin: 0;
+  background: linear-gradient(to bottom, #111, #333);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+.memory-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  filter: brightness(0.65);
+}
+
+/* Dây */
+.rope {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: #ccc;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  z-index: 0;
+}
+
+.top-rope {
+  top: 10%;
+}
+
+.bottom-rope {
+  top: 55%;
+}
+
+/* Carousel */
+.carousel {
+  display: flex;
+  gap: 50px;
+  position: absolute;
+  left: -5%;
+  width: 110%;
+}
+
+.top-carousel {
+  top: 10%; /* ngay dưới top-rope */
+  animation: scroll-left 30s linear infinite;
+}
+
+.bottom-carousel {
+  top: 55%; /* ngay dưới bottom-rope */
+  animation: scroll-right 30s linear infinite;
+}
+
+/* Keyframes */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-70%); }
+}
+
+@keyframes scroll-right {
+  0% { transform: translateX(-70%); }
+  100% { transform: translateX(0); }
+}
+
+/* Memory Card */
+.memory-card {
+  width: 200px;
+  height: 250px;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.polaroid {
+  background: #fff;
+  padding: 10px 10px 40px;
+  box-shadow: 0 8px 15px rgba(0,0,0,0.5);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.polaroid img {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  border-radius: 5px;
+  object-fit: contain;
+}
+
+.caption {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+  font-family: "Courier New", Courier, monospace;
+  letter-spacing: 1px;
+}
+
+/* === POPUP === */
+.popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.popup.active {
+  display: flex;
+}
+
+.popup-content {
+  width: 450px;
+  height: 600px;
+  perspective: 1000px;
+}
+
+.popup-card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.popup-card.flipped {
+  transform: rotateY(180deg);
+}
+
+.popup-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  padding: 20px;
+}
+
+.popup-front img {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  border-radius: 5px;
+  object-fit: contain;
+}
+
+.popup-back {
+  transform: rotateY(180deg);
+  justify-content: center;
+  text-align: center;
+  font-size: 15px;
+  color: #333;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

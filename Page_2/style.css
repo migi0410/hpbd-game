@@ -14,7 +14,7 @@ body, html {
 .container {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center; /* căn giữa theo chiều dọc */
@@ -33,9 +33,9 @@ body, html {
 }
 
 .title {
-  font-size: 6vw; 
+  font-size: clamp(32px, 5vw, 80px);  /* co giãn linh hoạt */
   color: #fff;
-  margin-bottom: 3vh;
+  margin-bottom: 4vh;
   text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
   z-index: 1;
   font-family: 'Orbitron', sans-serif;
@@ -44,8 +44,8 @@ body, html {
 .options {
   display: flex;
   justify-content: center;
-  gap: 4vw;
-  flex-wrap: nowrap;   /* giữ 1 hàng, không wrap */
+  gap: clamp(20px, 4vw, 80px); /* khoảng cách linh hoạt */
+  flex-wrap: nowrap;
   z-index: 1;
   font-family: 'Orbitron', sans-serif;
 }
@@ -55,14 +55,14 @@ body, html {
   border-radius: 25px;
   box-shadow: 0px 8px 25px rgba(0,0,0,0.35);
 
-  display: flex;            /* chữ căn giữa */
+  display: flex;
   justify-content: center;
   align-items: center;
 
-  width: 30vw;
-  max-width: 250px;
-  padding: 2vw;
-  font-size: 3vw;
+  width: clamp(160px, 18vw, 280px);  /* co giãn nhưng có min/max */
+  height: clamp(80px, 12vh, 140px);
+  font-size: clamp(14px, 1.8vw, 24px);
+
   font-weight: bold;
   color: #fde492;
   text-align: center;
@@ -82,27 +82,4 @@ body, html {
   box-shadow: 0px 12px 30px rgba(0,0,0,0.4);
   background: #fff;
   color: #000;
-}
-
-/* Media Queries: scale card + font trên màn hình nhỏ */
-
-/* Tablet: max-width 1024px */
-@media (max-width: 1024px) {
-  .title { font-size: 5vw; }
-  .card { width: 25vw; font-size: 3.5vw; padding: 2.5vw; }
-  .options { gap: 3vw; }
-}
-
-/* Mobile lớn: max-width 768px */
-@media (max-width: 768px) {
-  .title { font-size: 6vw; }
-  .card { width: 20vw; font-size: 3vw; padding: 2vw; }
-  .options { gap: 2.5vw; }
-}
-
-/* Mobile nhỏ: max-width 480px */
-@media (max-width: 480px) {
-  .title { font-size:8vw; }
-  .card { width: 18vw; font-size: 4vw; padding: 3vw; }
-  .options { gap: 2vw; }
 }

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Polaroid Video</title>
+  <link rel="stylesheet" href="style.css"> <!-- tách CSS riêng -->
+</head>
+<body>
+
+  <img src="./assets/background.jpg" alt="Background" class="bg">
+  <audio id="bgm" src="./assets/bgm.wav" preload="auto" loop></audio>
+
+  <!-- Polaroid 1: Video -->
+  <div class="polaroid" style="top: 2%; left: 42%; transform: rotate(-2deg);">
+    <video id="myVideo" src="./assets/video1.mp4"></video>
+    <div id="playBtn" class="play-btn"></div>
+    <div class="caption">
+      Life isn't always easy,<br/> but being your wife makes it all worth it.<br/>
+      Thank you for being the husband I've always needed.<br/>
+      Happy birthday, Chồng Iu <3 🎉
+    </div>
+  </div>
+
+  <!-- Polaroid 2: Hình ảnh -->
+  <div class="polaroid" style="top: 10%; left: 13%; transform: rotate(3deg);">
+    <img src="./assets/minh.jpg" alt="Kỷ niệm" />
+    <div class="caption">
+      Happy birthday bro! <br/>Tuổi mới, chúc bro thêm sức khỏe, nhiều tiền, bớt cọc và sẵn sàng đón chào một hành trình mới với vai trò người bố tuyệt vời nhất. 
+      Tuy bthg chúng ta hay đúm nhau, nhưng như z mới là sibling vibes mà. 
+      <br/>I got your back 😎
+    </div>
+  </div>
+
+  <div class="polaroid" style="top: 10%; left: 70%; transform: rotate(4deg);">
+    <video id="myVideo" src="./assets/giadinhvideo.mp4"></video>
+    <div id="playBtn" class="play-btn"></div>
+  </div>
+
+
+
+  
+
+  <script>
+    const video = document.getElementById("myVideo");
+    const playBtn = document.getElementById("playBtn");
+    const bgm = document.getElementById("bgm");
+
+    window.addEventListener("load", () => {
+      bgm.play().catch(() => {
+        // Một số trình duyệt chặn autoplay, chờ user interaction
+        document.body.addEventListener("click", () => {
+          bgm.play();
+        }, { once: true });
+      });
+    });
+
+    playBtn.addEventListener("click", () => {
+      video.play();
+      bgm.pause();
+      playBtn.classList.add("hidden");
+    });
+
+    video.addEventListener("pause", () => {
+      playBtn.classList.remove("hidden");
+    });
+
+    video.addEventListener("ended", () => {
+      playBtn.classList.remove("hidden");
+      bgm.play();
+    });
+  </script>
+
+</body>
+</html>

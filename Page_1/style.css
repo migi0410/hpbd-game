@@ -27,7 +27,7 @@ html, body {
 /* message text */
 .message {
   position: absolute;
-  bottom: 5%; /* dùng bottom thay top để responsive hơn */
+  bottom: 8%; /* giữ ổn định trên desktop */
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -37,7 +37,7 @@ html, body {
 }
 
 .message .hint {
-  font-size: 2.5vw;
+  font-size: clamp(16px, 2vw, 28px);
   margin-bottom: 0.5em;
   opacity: 0;
   animation: blinkHint 2s infinite;
@@ -45,7 +45,7 @@ html, body {
 
 .message .line1,
 .message .line2 {
-  font-size: 6vw;
+  font-size: clamp(32px, 6vw, 96px);
   font-weight: bold;
 }
 
@@ -53,29 +53,4 @@ html, body {
 @keyframes blinkHint {
   0%, 100% { opacity: 0; }
   50% { opacity: 1; }
-}
-
-/* Media Queries */
-
-/* Tablet */
-@media (max-width: 1024px) {
-  .message .hint { font-size: 3.5vw; }
-  .message .line1,
-  .message .line2 { font-size: 8vw; }
-}
-
-/* Mobile lớn */
-@media (max-width: 768px) {
-  .message { bottom: 12%; }
-  .message .hint { font-size: 4.5vw; }
-  .message .line1,
-  .message .line2 { font-size: 10vw; }
-}
-
-/* Mobile nhỏ */
-@media (max-width: 480px) {
-  .message { bottom: 15%; }
-  .message .hint { font-size: 5.5vw; }
-  .message .line1,
-  .message .line2 { font-size: 12vw; }
 }

@@ -1,0 +1,253 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  font-family: 'Orbitron', sans-serif;
+  overflow: hidden;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.bg {
+  position: absolute;
+  top: 0;   /* thêm */
+  left: 0;  /* thêm */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+/* Roulette */
+.roulette-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 150px;
+}
+
+.roulette {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.items {
+  display: flex;
+  transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: translateX(155px);
+}
+
+.item {
+  width: 300px;
+  height: 300px;
+  margin: 0 5px;
+  background: #111;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.highlight {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  transform: translateX(-50%);
+  border: 4px solid yellow;
+  pointer-events: none;
+}
+
+.return-msg {
+  color: white;
+  font-size: 24px;
+  margin-top: 20px;
+  text-align: center;
+  opacity: 0; /* bắt đầu ẩn */
+}
+
+/* Controls */
+.controls {
+  margin-top: 30px;
+  text-align: center;
+}
+
+#spinBtn {
+  font-size: 35px;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #ffcc00;
+  font-family: 'Orbitron', sans-serif;
+  z-index: 1;
+}
+
+/* Popup */
+#popup {
+  position: fixed;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#popup.fade-in {
+  opacity: 1;
+}
+
+#popup.fade-out {
+  opacity: 0;
+}
+
+#popup img {
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  border-radius: 15px;
+}
+
+.popup-name {
+  margin-bottom: 10px;
+  font-size: 30px;
+  color: #ffcc00;
+  font-weight: bold;
+  text-align: center;
+}
+
+#popup .tap-msg {
+  margin-top: 20px;
+  font-size: 20px;
+  color: #fff;
+}
+
+/* Popup vàng riêng */
+#popup.gold-popup {
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 500px;
+  text-align: center;
+}
+
+.hidden { display: none !important; }
+
+/* Ẩn roulette khi vàng */
+.roulette-wrapper.hidden {
+  display: none !important;
+}
+
+/* Golden card */
+#golden-card {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  opacity: 1;
+}
+
+#golden-card img {
+  width: 500px;
+  height: auto;
+}
+
+/* Quà vàng */
+#golden-gift {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  opacity: 0;
+  transform-origin: center;
+}
+
+#golden-gift img {
+  width: 600px;
+  height: auto;
+}
+
+/* Hiệu ứng */
+.shake {
+  animation: shake 0.6s infinite;
+}
+
+#golden-card.fade-out {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+#golden-gift.show {
+  animation: popIn 1s forwards;
+}
+
+.return-msg {
+  position: fixed;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 1.5 vw;
+  text-align: center;
+  opacity: 0;
+}
+
+.return-msg.fade-in {
+  animation: fadeIn 0.6s forwards;
+}
+
+
+.fade-in {
+  animation: fadeIn 0.6s forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+
+@keyframes shake {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) rotate(5deg); }
+  50% { transform: translate(-50%, -50%) rotate(-5deg); }
+  75% { transform: translate(-50%, -50%) rotate(5deg); }
+  100% { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

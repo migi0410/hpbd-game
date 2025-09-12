@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Memory Page</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <img src="./assets/background.jpg" alt="Background" class="bg">
+  <audio id="flip-sound" src="./assets/flip.wav" preload="auto"></audio>
+  <audio id="bgm" src="./assets/bgm.wav" preload="auto" loop></audio>
+
+
+  <div class="memory-container">
+    <!-- Dây trên -->
+    <div class="rope top-rope"></div>
+    <div class="carousel top-carousel">
+      <div class="memory-card" data-description="Như trong hình..." data-img="./assets/img1.jpg" data-caption="12/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img1.jpg" alt="">
+          <div class="caption">07/09/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Họp Hội đồng quản trị" data-img="./assets/img2.jpg" data-caption="14/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img2.jpg" alt="">
+          <div class="caption">07/09/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Họp Hội đồng quản trị nhưng dễ thương hơn... 🎂" data-img="./assets/img3.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img3.jpg" alt="">
+          <div class="caption">07/09/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Ò ó oooo..." data-img="./assets/img4.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img4.jpg" alt="">
+          <div class="caption">07/09/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Xích đu tình iuu <3" data-img="./assets/img5.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img5.jpg" alt="">
+          <div class="caption">07/09/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Heyyyy!" data-img="./assets/img6.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img6.jpg" alt="">
+          <div class="caption">07/09/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Vê nì xừuuu !!!" data-img="./assets/img7.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img7.jpg" alt="">
+          <div class="caption">06/04/2025</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="VinWonders Phú Quốc: Vui chơi bất tận !!!" data-img="./assets/img8.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img8.jpg" alt="">
+          <div class="caption">06/04/2025</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Những chiếc môi cười và một khuôn mặt tái chanh..." data-img="./assets/img9.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img9.jpg" alt="">
+          <div class="caption">04/05/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Anh muốn được cùng em...về vùng biển vắng..." data-img="./assets/img10.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img10.jpg" alt="">
+          <div class="caption">04/05/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="NamCatTien chạy xong gặp cô tiên" data-img="./assets/img22.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img22.jpg" alt="">
+          <div class="caption">24/12/2023</div>
+        </div>
+      </div>
+      <!-- Thêm memory-card khác -->
+    </div>
+
+    <!-- Dây dưới -->
+    <div class="rope bottom-rope"></div>
+    <div class="carousel bottom-carousel">
+      <div class="memory-card" data-description="Chính thất zà tỉu tam" data-img="./assets/img11.jpg" data-caption="22/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img11.jpg" alt="">
+          <div class="caption">12/04/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="CSHS ??" data-img="./assets/img21.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img12.jpg" alt="">
+          <div class="caption">03/12/2023</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Thấy dì hông mấy cưng 😎" data-img="./assets/img13.jpg" data-caption="26/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img13.jpg" alt="">
+          <div class="caption">13/04/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Anh em xã đoàn" data-img="./assets/img14.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img14.jpg" alt="">
+          <div class="caption">13/04/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Tiến vào Đại hải trình " data-img="./assets/img15.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img15.jpg" alt="">
+          <div class="caption">03/05/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="10p trước thảm họa..." data-img="./assets/img17.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img17.jpg" alt="">
+          <div class="caption">03/05/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Test cam trước điện thoại mới cà mặt siuu ảo !" data-img="./assets/img18.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img18.jpg" alt="">
+          <div class="caption">07/10/2023</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Gáp-ziệt Ôn xì sta con sợt" data-img="./assets/img19.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img19.jpg" alt="">
+          <div class="caption">07/10/2023</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="mêga macxiket nấu sinh nhật zợ iu" data-img="./assets/img20.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img20.jpg" alt="">
+          <div class="caption">22/10/2023</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Chủ tịch Đờ Mờ Hờ zà em ghệ đíc bự" data-img="./assets/img21.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img21.jpg" alt="">
+          <div class="caption">12/04/2024</div>
+        </div>
+      </div>
+      <div class="memory-card" data-description="Bị Nhà Nước dụ..." data-img="./assets/img23.jpg" data-caption="20/06/2024">
+        <div class="polaroid">
+          <img src="./assets/img23.jpg" alt="">
+          <div class="caption">30/04/2025</div>
+        </div>
+      </div>
+      <!-- Thêm memory-card khác -->
+    </div>
+  </div>
+
+  <!-- POPUP -->
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <div class="popup-card" id="popup-card">
+        <div class="popup-face popup-front">
+          <img id="popup-img" src="" alt="">
+        </div>
+        <div class="popup-face popup-back">
+          <div id="popup-description"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS gộp -->
+  <script>
+    const popup = document.getElementById("popup");
+    const popupCard = document.getElementById("popup-card");
+    const popupImg = document.getElementById("popup-img");
+    const popupDescription = document.getElementById("popup-description");
+    const flipSound = document.getElementById("flip-sound");
+    const bgm = document.getElementById("bgm");
+
+    window.addEventListener("load", () => {
+      bgm.play().catch(() => {
+        // Một số trình duyệt chặn autoplay, chờ user interaction
+        document.body.addEventListener("click", () => {
+          bgm.play();
+        }, { once: true });
+      });
+    });
+
+    // Click card trong carousel -> mở popup
+    document.querySelectorAll(".memory-card").forEach(card => {
+      card.addEventListener("click", () => {
+        popupImg.src = card.dataset.img;
+        popupDescription.textContent = card.dataset.description;
+        popup.classList.add("active");
+        popupCard.classList.remove("flipped"); // reset trạng thái
+      });
+    });
+
+    // Click overlay -> tắt popup
+    popup.addEventListener("click", e => {
+      if(e.target === popup){
+        popup.classList.remove("active");
+      }
+    });
+
+    // Click popup-card -> lật
+    popupCard.addEventListener("click", () => {
+      popupCard.classList.toggle("flipped");
+      flipSound.currentTime = 0; // reset nếu nhấn liên tục
+      flipSound.play();
+
+    });
+  </script>
+</body>
+</html>
