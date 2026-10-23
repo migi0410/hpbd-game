@@ -976,22 +976,29 @@
       }
     }
 
-    // Vòng lặp 60fps có quán tính (Inertia) mượt như iOS
-    function animateGalaxy() {
+    // Vòng lặp chuẩn hóa theo thời gian thực (Delta-time) để màn hình 60Hz hay 120Hz trên iPhone/Android đều xoay chậm rãi, êm ái như nhau
+    let lastFrameTime = performance.now();
+
+    function animateGalaxy(now) {
+      const dt = Math.min(2.2, Math.max(0.5, (now - lastFrameTime) / 16.667));
+      lastFrameTime = now;
+
       if (state.currentStage === "stage-galaxy") {
         if (!state.isDragging) {
-          if (Math.abs(velX) > 0.01 || Math.abs(velY) > 0.01) {
-            state.rotY += velX;
-            state.rotX = Math.max(-52, Math.min(52, state.rotX + velY));
-            velX *= 0.93;
-            velY *= 0.93;
+          if (Math.abs(velX) > 0.008 || Math.abs(velY) > 0.008) {
+            state.rotY += velX * dt;
+            state.rotX = Math.max(-48, Math.min(48, state.rotX + velY * dt));
+            const friction = Math.pow(0.9, dt);
+            velX *= friction;
+            velY *= friction;
             updateSceneTransform();
           } else if (state.autoRotate) {
             if (state.galaxyMode === "tunnel") {
-              tunnelOffsetZ += 2.2;
+              tunnelOffsetZ += 0.75 * dt;
               if (tunnelOffsetZ > 44 * 155) tunnelOffsetZ = -400;
             } else {
-              state.rotY += 0.18;
+              // Xoay tự động thật chậm rãi (~2.8 độ/giây) để dễ ngắm từng bức hình
+              state.rotY += 0.048 * dt;
             }
             updateSceneTransform();
           }
@@ -1021,13 +1028,13 @@
       }
 
       if (state.galaxyMode === "tunnel") {
-        tunnelOffsetZ += dy * 2.5;
-        state.rotY += dx * 0.15;
+        tunnelOffsetZ += dy * 1.4;
+        state.rotY += dx * 0.08;
       } else {
-        velX = dx * 0.34;
-        velY = -dy * 0.24;
+        velX = dx * 0.16;
+        velY = -dy * 0.12;
         state.rotY += velX;
-        state.rotX = Math.max(-52, Math.min(52, state.rotX + velY));
+        state.rotX = Math.max(-48, Math.min(48, state.rotX + velY));
       }
 
       state.dragStartX = e.clientX;
