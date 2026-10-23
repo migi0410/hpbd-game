@@ -2501,44 +2501,39 @@ body:not(.direct-edit-enabled) .photo-onscreen-caption:empty {
   color: #060609;
 }
 
-/* Khối Chữ Chạy & Chỉnh Sửa Trực Tiếp Ở Đáy Story */
+/* Khối Chữ Tinh Gọn Ở Đáy Story (Chỉ hiển thị hình & chữ, không nút rườm rà) */
 .reels-bottom-overlay {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 22;
-  padding: 48px 64px 22px 18px;
+  padding: 56px 22px 24px;
   background: linear-gradient(
     to top,
-    rgba(4, 4, 7, 0.96) 0%,
-    rgba(4, 4, 7, 0.82) 55%,
+    rgba(4, 4, 7, 0.92) 0%,
+    rgba(4, 4, 7, 0.65) 55%,
     transparent 100%
   );
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 5px;
+  pointer-events: none;
 }
 
-.reels-onscreen-tag {
+.reels-clean-date {
   font-family: var(--font-mono);
   font-size: 0.68rem;
+  letter-spacing: 1.5px;
   color: var(--gold-champagne);
-  background: rgba(229, 207, 163, 0.12);
-  border: 1px dashed rgba(229, 207, 163, 0.4);
-  padding: 3px 9px;
-  border-radius: 6px;
-}
-
-.reels-onscreen-tag:empty::before {
-  content: attr(data-placeholder);
-  color: rgba(229, 207, 163, 0.55);
+  text-transform: uppercase;
+  opacity: 0.9;
 }
 
 .reels-story-title {
   font-family: var(--font-serif);
-  font-size: clamp(1.45rem, 4.5vw, 1.85rem);
+  font-size: clamp(1.5rem, 4.8vw, 1.95rem);
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.15;
@@ -2547,11 +2542,9 @@ body:not(.direct-edit-enabled) .photo-onscreen-caption:empty {
 
 .reels-story-note {
   font-family: var(--font-sans);
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   line-height: 1.55;
-  color: rgba(247, 244, 238, 0.86);
-  max-height: 4.8em;
-  overflow-y: auto;
+  color: rgba(247, 244, 238, 0.88);
 }
 
 @media (max-width: 768px) {
@@ -2566,6 +2559,6 @@ body:not(.direct-edit-enabled) .photo-onscreen-caption:empty {
   }
 
   .reels-bottom-overlay {
-    padding: 38px 58px 16px 14px;
+    padding: 48px 18px 20px;
   }
 }

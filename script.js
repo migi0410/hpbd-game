@@ -1236,12 +1236,13 @@
       preloadImg.src = nextItem.src;
     }
 
-    setText("reels-counter", `${String(state.reelIndex + 1).padStart(2, "0")} / ${String(allPhotos.length).padStart(2, "0")}`);
-    setText("reels-date", item.date || "2023 — 2026");
-    setText("reels-title", item.title || `Khoảnh khắc #${String(state.reelIndex + 1).padStart(2, "0")}`);
-    setText("reels-overlay-text", item.overlayText || "");
+    setText("reels-date", item.date || "");
+    setText("reels-title", item.overlayText || item.title || "");
 
-    startReelNoteTypewriter(item.note || "");
+    const rawNote = (item.note || "").trim();
+    const isDefaultPrompt =
+      rawNote.startsWith("Chạm để viết ghi chú") || rawNote.startsWith("Nhấp vào đây để viết");
+    startReelNoteTypewriter(isDefaultPrompt ? "" : rawNote);
     syncReelsSegmentsUI();
   }
 
@@ -1254,10 +1255,6 @@
 
     let charIdx = 0;
     reelNoteTimer = setInterval(() => {
-      if (document.activeElement === noteEl) {
-        clearInterval(reelNoteTimer);
-        return;
-      }
       charIdx += 2;
       noteEl.textContent = fullText.slice(0, charIdx);
       if (charIdx >= fullText.length) {
@@ -1285,8 +1282,6 @@
   }
 
   function stepReelSlide(delta) {
-    const hint = document.getElementById("reels-swipe-hint");
-    if (hint) hint.style.opacity = "0";
     openReelAt(state.reelIndex + delta, delta > 0 ? "next" : "prev");
   }
 
@@ -1296,12 +1291,6 @@
 
     const viewport = document.getElementById("reels-media-viewport");
     const playerCard = document.getElementById("reels-player-card");
-    const btnAuto = document.getElementById("btn-reels-autoplay");
-    const btnRotate = document.getElementById("btn-reels-rotate");
-    const btnExpand = document.getElementById("btn-reels-expand");
-    const btnPrev = document.getElementById("btn-reels-prev");
-    const btnNext = document.getElementById("btn-reels-next");
-    const btnSpark = document.getElementById("btn-reels-spark");
 
     // Vòng lặp chạy thanh tiến trình Story (5.8 giây / ảnh)
     let lastReelTick = performance.now();
@@ -1309,17 +1298,7 @@
       const dtMs = Math.min(100, now - lastReelTick);
       lastReelTick = now;
 
-      const isEditingInReels =
-        document.activeElement &&
-        document.activeElement.closest &&
-        document.activeElement.closest("#reels-player-card");
-
-      if (
-        state.currentStage === "stage-reels" &&
-        state.reelAutoPlay &&
-        !state.reelPausedByHold &&
-        !isEditingInReels
-      ) {
+      if (state.currentStage === "stage-reels" && state.reelAutoPlay && !state.reelPausedByHold) {
         const item = allPhotos[state.reelIndex];
         const durationMs = isVideoItem(item) ? 11000 : 5800;
         state.reelProgress += (dtMs / durationMs) * 100;
@@ -1336,36 +1315,6 @@
       requestAnimationFrame(tickReelProgress);
     }
     requestAnimationFrame(tickReelProgress);
-
-    if (btnAuto) {
-      btnAuto.addEventListener("click", () => {
-        state.reelAutoPlay = !state.reelAutoPlay;
-        btnAuto.textContent = state.reelAutoPlay ? "⏸ Tự chạy" : "▶ Đang dừng";
-        if (playerCard) playerCard.classList.toggle("paused", !state.reelAutoPlay);
-      });
-    }
-
-    if (btnRotate) {
-      btnRotate.addEventListener("click", () => {
-        rotatePhotoByIndex(state.reelIndex);
-        openReelAt(state.reelIndex);
-      });
-    }
-
-    if (btnExpand) {
-      btnExpand.addEventListener("click", () => {
-        openLightbox(state.reelIndex);
-      });
-    }
-
-    if (btnPrev) btnPrev.addEventListener("click", () => stepReelSlide(-1));
-    if (btnNext) btnNext.addEventListener("click", () => stepReelSlide(1));
-    if (btnSpark) {
-      btnSpark.addEventListener("click", () => {
-        spawnFireworkBurst(window.innerWidth * 0.5, window.innerHeight * 0.35);
-        playMagicChime(587.33);
-      });
-    }
 
     // Hỗ trợ Vuốt Dọc Lên/Xuống (Reels) + Chạm Trái/Phải (Story) + Nhấn Giữ Tạm Dừng
     if (viewport) {
@@ -1416,9 +1365,9 @@
             if (Math.abs(dx) < 12 && Math.abs(dy) < 12 && elapsed < 260) {
               const rect = viewport.getBoundingClientRect();
               const tapX = e.changedTouches[0].clientX - rect.left;
-              if (tapX < rect.width * 0.32) {
+              if (tapX < rect.width * 0.35) {
                 stepReelSlide(-1);
-              } else if (tapX > rect.width * 0.68) {
+              } else {
                 stepReelSlide(1);
               }
             }
@@ -1427,7 +1376,15 @@
         { passive: true }
       );
 
-      // Hỗ trợ cuộn chuột trên máy tính
+      // Hỗ trợ click chuột trái/phải và cuộn chuột trên máy tính
+      viewport.addEventListener("click", (e) => {
+        if (e.pointerType === "touch") return;
+        const rect = viewport.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        if (clickX < rect.width * 0.35) stepReelSlide(-1);
+        else stepReelSlide(1);
+      });
+
       let wheelCooldown = false;
       viewport.addEventListener(
         "wheel",
@@ -1444,57 +1401,6 @@
         },
         { passive: false }
       );
-    }
-
-    // Chỉnh sửa trực tiếp Tiêu đề, Ngày chụp, Lời nhắn ngay trên màn hình Story Reels
-    const rDate = document.getElementById("reels-date");
-    const rTitle = document.getElementById("reels-title");
-    const rNote = document.getElementById("reels-note");
-    const rOverlay = document.getElementById("reels-overlay-text");
-
-    if (rDate) {
-      rDate.addEventListener("input", () => {
-        const item = allPhotos[state.reelIndex];
-        if (!item) return;
-        item.date = rDate.textContent.trim();
-        syncSingleCardUI(state.reelIndex);
-        persistPhotoEdits();
-      });
-    }
-
-    if (rTitle) {
-      rTitle.addEventListener("input", () => {
-        const item = allPhotos[state.reelIndex];
-        if (!item) return;
-        item.title = rTitle.textContent.trim();
-        syncSingleCardUI(state.reelIndex);
-        persistPhotoEdits();
-      });
-    }
-
-    if (rNote) {
-      rNote.addEventListener("focus", () => {
-        if (reelNoteTimer) clearInterval(reelNoteTimer);
-        const item = allPhotos[state.reelIndex];
-        if (item) rNote.textContent = item.note || "";
-      });
-      rNote.addEventListener("input", () => {
-        const item = allPhotos[state.reelIndex];
-        if (!item) return;
-        item.note = rNote.textContent.trim();
-        syncSingleCardUI(state.reelIndex);
-        persistPhotoEdits();
-      });
-    }
-
-    if (rOverlay) {
-      rOverlay.addEventListener("input", () => {
-        const item = allPhotos[state.reelIndex];
-        if (!item) return;
-        item.overlayText = rOverlay.textContent.trim();
-        syncSingleCardUI(state.reelIndex);
-        persistPhotoEdits();
-      });
     }
   }
 
