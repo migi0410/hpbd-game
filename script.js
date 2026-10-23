@@ -276,6 +276,119 @@
     } catch (_) {}
   }
 
+  const KV_APP_KEY = "1ksr18he";
+  const KV_PTR_KEY = "hpbd_ptr_v3";
+  const NTFY_TOPIC = "hpbd_galaxy_3d_migi0410_v3";
+
+  async function saveStateToCloudDb(payload) {
+    // 1. Gọi Serverless API /api/storage (Hoạt động trên cả Vercel & Localhost server.py)
+    try {
+      const resp = await fetch("/api/storage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (resp.ok) {
+        const resJson = await resp.json();
+        if (resJson && resJson.ok && resJson.blobKey) {
+          return true;
+        }
+      }
+    } catch (_) {}
+
+    // 2. Dự phòng trực tiếp từ trình duyệt lên Cloud DB (Bytebin + KeyValue + Ntfy Realtime)
+    try {
+      const postRes = await fetch("https://bytebin.lucko.me/post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (postRes.ok) {
+        const { key: blobKey } = await postRes.json();
+        if (blobKey) {
+          await fetch(
+            `https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/${KV_APP_KEY}/${KV_PTR_KEY}/${encodeURIComponent(blobKey)}`,
+            { method: "POST" }
+          ).catch(() => {});
+          await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+            method: "POST",
+            body: JSON.stringify({ blobKey, updatedAt: payload.updatedAt })
+          }).catch(() => {});
+          return true;
+        }
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  async function fetchLatestStateFromCloudDb() {
+    // 1. Thử lấy từ Serverless API /api/storage
+    try {
+      const resp = await fetch("/api/storage", { cache: "no-store" });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && data.ok && data.state && data.state.updatedAt) {
+          return data.state;
+        }
+      }
+    } catch (_) {}
+
+    // 2. Dự phòng đọc trực tiếp từ KeyValue DB + Bytebin Cloud
+    try {
+      const kvRes = await fetch(
+        `https://keyvalue.immanuel.co/api/KeyVal/GetValue/${KV_APP_KEY}/${KV_PTR_KEY}`,
+        { cache: "no-store" }
+      );
+      if (kvRes.ok) {
+        const raw = await kvRes.text();
+        const blobKey = JSON.parse(raw);
+        if (blobKey && typeof blobKey === "string" && blobKey !== "null") {
+          const blobRes = await fetch(`https://bytebin.lucko.me/${encodeURIComponent(blobKey)}`, {
+            cache: "no-store"
+          });
+          if (blobRes.ok) {
+            return await blobRes.json();
+          }
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  function initRealtimeCloudSync() {
+    if (typeof window.EventSource === "undefined") return;
+    try {
+      const es = new EventSource(`https://ntfy.sh/${NTFY_TOPIC}/sse`);
+      es.onmessage = async (evt) => {
+        try {
+          const wrapper = JSON.parse(evt.data);
+          if (!wrapper || !wrapper.message) return;
+          const msg = JSON.parse(wrapper.message);
+          if (!msg || !msg.blobKey || !msg.updatedAt) return;
+
+          const localTime = state.lastUpdatedAt || 0;
+          if (msg.updatedAt > localTime + 500) {
+            const blobRes = await fetch(`https://bytebin.lucko.me/${encodeURIComponent(msg.blobKey)}`, {
+              cache: "no-store"
+            });
+            if (blobRes.ok) {
+              const cloudState = await blobRes.json();
+              if (cloudState && cloudState.updatedAt > (state.lastUpdatedAt || 0)) {
+                applyStatePayload(cloudState);
+                try {
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify(allPhotos));
+                  localStorage.setItem(FULL_STATE_KEY, JSON.stringify(cloudState));
+                } catch (_) {}
+                refreshAllViewsFromState();
+                showSaveToast("☁️ Đã đồng bộ nội dung mới nhất từ thiết bị khác!");
+              }
+            }
+          }
+        } catch (_) {}
+      };
+    } catch (_) {}
+  }
+
   async function loadCloudOrUrlStateOnBoot() {
     // 1. Đọc từ URL Hash (#s=...) nếu có
     try {
@@ -284,49 +397,43 @@
       if (match && match[1]) {
         const decoded = await decompressTokenToState(decodeURIComponent(match[1]));
         if (decoded) {
-          // Chỉ ghi đè nếu bản trong URL mới hơn hoặc máy khách chưa có dữ liệu localStorage
           const localTime = state.lastUpdatedAt || 0;
           const urlTime = decoded.updatedAt || 0;
           if (urlTime >= localTime || localTime === 0) {
             applyStatePayload(decoded);
             try {
-              localStorage.setItem( STORAGE_KEY, JSON.stringify(allPhotos));
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(allPhotos));
               localStorage.setItem(FULL_STATE_KEY, JSON.stringify(decoded));
             } catch (_) {}
             refreshAllViewsFromState();
-          } else {
-            // Bản trong localStorage mới hơn -> cập nhật ngược lại lên URL
-            const freshPayload = buildFullStatePayload();
-            const freshToken = await compressStateToToken(freshPayload);
-            if (freshToken) window.history.replaceState(null, "", `#s=${freshToken}`);
           }
-          return;
         }
-      } else if (state.lastUpdatedAt) {
-        // Nếu URL chưa có #s= nhưng localStorage đã có bản lưu -> tự động gắn lên URL luôn
-        const freshPayload = buildFullStatePayload();
-        const freshToken = await compressStateToToken(freshPayload);
-        if (freshToken) window.history.replaceState(null, "", `#s=${freshToken}`);
       }
     } catch (_) {}
 
-    // 2. Nếu đang chạy trên localhost thì kiểm tra thêm dữ liệu trên đĩa
-    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      try {
-        const resp = await fetch("/api/storage", { cache: "no-store" });
-        if (resp.ok) {
-          const data = await resp.json();
-          if (data && data.ok && data.state) {
-            const cloudTime = data.state.updatedAt || 0;
-            const localTime = state.lastUpdatedAt || 0;
-            if (cloudTime > localTime) {
-              applyStatePayload(data.state);
-              refreshAllViewsFromState();
-            }
-          }
-        }
-      } catch (_) {}
-    }
+    // 2. Luôn tải dữ liệu mới nhất từ Cloud DB (Để mọi điện thoại & máy tính đều thấy chung 1 nội dung)
+    try {
+      const cloudState = await fetchLatestStateFromCloudDb();
+      const localTime = state.lastUpdatedAt || 0;
+      const cloudTime = (cloudState && cloudState.updatedAt) || 0;
+
+      if (cloudState && cloudTime > localTime) {
+        applyStatePayload(cloudState);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(allPhotos));
+          localStorage.setItem(FULL_STATE_KEY, JSON.stringify(cloudState));
+        } catch (_) {}
+        refreshAllViewsFromState();
+      } else if (localTime > cloudTime && localTime > 0) {
+        // Nếu máy này đã có bản sửa trong localStorage mới hơn Cloud DB -> đẩy tự động lên Cloud DB luôn!
+        const freshPayload = buildFullStatePayload();
+        freshPayload.updatedAt = localTime;
+        saveStateToCloudDb(freshPayload).catch(() => {});
+      }
+    } catch (_) {}
+
+    // 3. Bật kênh lắng nghe đồng bộ thời gian thực giữa Điện thoại & Máy tính
+    initRealtimeCloudSync();
   }
 
   function refreshAllViewsFromState() {
@@ -338,7 +445,7 @@
     renderFamilyWishes();
   }
 
-  function persistPhotoEdits(toastMsg = "💾 Đã tự động lưu nội dung!") {
+  function persistPhotoEdits(toastMsg = "☁️ Đã lưu tự động lên Cloud DB!") {
     const payload = buildFullStatePayload();
     state.lastUpdatedAt = payload.updatedAt;
     try {
@@ -348,7 +455,7 @@
 
     showSaveToast(toastMsg);
 
-    // Tự động cập nhật mã nén trên thanh địa chỉ URL (#s=...) sau 100ms
+    // Tự động đồng bộ lên Cloud DB + URL sau 600ms kể từ khi ngừng gõ
     if (saveApiTimer) clearTimeout(saveApiTimer);
     saveApiTimer = setTimeout(async () => {
       try {
@@ -358,15 +465,8 @@
         }
       } catch (_) {}
 
-      // Nếu đang chạy trên localhost thì đồng bộ luôn vào config.js
-      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-        fetch("/api/storage", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        }).catch(() => {});
-      }
-    }, 100);
+      await saveStateToCloudDb(payload);
+    }, 600);
   }
 
   async function copyShareableVercelLink() {
@@ -375,15 +475,16 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(allPhotos));
       localStorage.setItem(FULL_STATE_KEY, JSON.stringify(payload));
+      await saveStateToCloudDb(payload);
       const token = await compressStateToToken(payload);
       const shareUrl = `${window.location.origin}${window.location.pathname}#s=${token}`;
       window.history.replaceState(null, "", `#s=${token}`);
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(shareUrl);
       }
-      showSaveToast("✅ Đã Lưu & Copy Link! Tải lại trang (F5) hoặc gửi link này đều giữ nguyên 100%!");
+      showSaveToast("☁️ Đã Lưu lên Cloud DB! Bất kỳ ai mở web trên Điện thoại hay Máy tính đều thấy ngay!");
     } catch (err) {
-      showSaveToast("💾 Đã lưu vào trình duyệt!");
+      showSaveToast("☁️ Đã lưu nội dung!");
     }
   }
 
