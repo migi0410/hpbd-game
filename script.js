@@ -420,7 +420,7 @@
   function syncSingleCardUI(idx) {
     const p = allPhotos[idx];
     if (!p) return;
-    // Cập nhật tiêu đề trên thẻ 3D Galaxy
+    // Cập nhật tại chỗ trên thẻ 3D Galaxy (không dựng lại DOM)
     const gCard = document.querySelector(`.galaxy-card[data-index="${idx}"]`);
     if (gCard) {
       const cap = gCard.querySelector(".galaxy-card-caption");
@@ -429,6 +429,25 @@
       if (media) {
         media.style.transform = p.rotation ? `rotate(${p.rotation}deg)` : "";
       }
+    }
+    // Cập nhật tại chỗ trên thẻ Gallery (không dựng lại 44 thẻ khi đang gõ phím trên điện thoại)
+    const pWrap = document.querySelector(`.polaroid-img-wrap[data-idx="${idx}"]`);
+    const pCard = pWrap ? pWrap.closest(".polaroid-card") : null;
+    if (pCard) {
+      const frontTitle = pCard.querySelector(".polaroid-title");
+      const backTitle = pCard.querySelector(".polaroid-back-title");
+      const backNote = pCard.querySelector(".polaroid-back-note");
+      const dateTag = pCard.querySelector(".polaroid-date-tag");
+      const overlayTag = pCard.querySelector(".photo-onscreen-caption");
+      const media = pCard.querySelector(".polaroid-img-wrap img, .polaroid-img-wrap video");
+      if (frontTitle && document.activeElement !== frontTitle) frontTitle.textContent = p.title || "";
+      if (backTitle && document.activeElement !== backTitle) backTitle.textContent = p.title || "";
+      if (backNote && document.activeElement !== backNote) backNote.textContent = p.note || "";
+      if (dateTag && document.activeElement !== dateTag) {
+        dateTag.textContent = isVideoItem(p) ? `▶ VIDEO • ${p.date || "Kỷ niệm"}` : (p.date || "Kỷ niệm");
+      }
+      if (overlayTag && document.activeElement !== overlayTag) overlayTag.textContent = p.overlayText || "";
+      if (media) media.style.transform = p.rotation ? `rotate(${p.rotation}deg)` : "";
     }
   }
 
@@ -743,6 +762,16 @@
     return item.type === "video" || /\.(mp4|webm|mov|ogg)$/i.test(item.src || "");
   }
 
+  function getThumbSrc(photo) {
+    if (!photo || !photo.src) return "";
+    if (photo.thumb) return photo.thumb;
+    const match = photo.src.match(/^assets\/images\/(ky-niem-\d+)\.(jpg|jpeg|png|mp4|webm)$/i);
+    if (match) {
+      return `assets/images/thumbs/${match[1]}.jpg`;
+    }
+    return photo.src;
+  }
+
   // ==========================================================================
   // 5. CẢNH 2: KHÔNG GIAN 3D ĐA CHIỀU (VORTEX / TIME TUNNEL / ORBIT / SPHERE)
   //    Tối ưu hóa tỷ lệ khung hình dọc Mobile & cảm ứng đa điểm (Pinch & Inertia)
@@ -758,11 +787,11 @@
       card.dataset.index = String(idx);
       const isVid = isVideoItem(photo);
       const rotStyle = photo.rotation ? `style="transform: rotate(${photo.rotation}deg)"` : "";
-      const mediaHtml = isVid
-        ? `<video src="${photo.src}" ${rotStyle} autoplay loop muted playsinline preload="metadata"></video>`
-        : `<img src="${photo.src}" ${rotStyle} alt="${escapeHtml(photo.title)}" loading="lazy" />`;
+      const thumbUrl = getThumbSrc(photo);
+      // Dùng ảnh Thumbnail nhẹ (30KB) cho toàn bộ 44 thẻ 3D (kể cả video) để GPU Mobile mượt 60fps & không chớp tắt
+      const mediaHtml = `<img src="${thumbUrl}" ${rotStyle} alt="${escapeHtml(photo.title)}" decoding="async" />`;
       const numStr = String(idx + 1).padStart(2, "0");
-      const badgeLabel = isVid ? `▶ ${numStr}` : numStr;
+      const badgeLabel = isVid ? `▶ VIDEO` : numStr;
       const overlayHtml = photo.overlayText
         ? `<div class="photo-onscreen-caption" style="pointer-events:none;font-size:0.62rem;padding:2px 6px;bottom:24px;">${escapeHtml(photo.overlayText)}</div>`
         : "";
@@ -783,14 +812,25 @@
       holder.appendChild(card);
     });
 
-    applyGalaxyLayout(state.galaxyMode);
+    applyGalaxyLayout(state.galaxyMode, false);
   }
 
-  function applyGalaxyLayout(mode) {
+  let layoutTransTimer = null;
+
+  function applyGalaxyLayout(mode, animateTransition = false) {
     state.galaxyMode = mode;
     document.querySelectorAll(".mode-btn").forEach((b) => {
       b.classList.toggle("active", b.dataset.mode === mode);
     });
+
+    const sceneEl = document.getElementById("galaxy-scene");
+    if (sceneEl && animateTransition) {
+      sceneEl.classList.add("layout-transitioning");
+      if (layoutTransTimer) clearTimeout(layoutTransTimer);
+      layoutTransTimer = setTimeout(() => {
+        sceneEl.classList.remove("layout-transitioning");
+      }, 680);
+    }
 
     const cards = document.querySelectorAll(".galaxy-card");
     const count = cards.length;
@@ -980,7 +1020,7 @@
       btn.addEventListener("click", () => {
         tunnelOffsetZ = 0;
         state.rotX = btn.dataset.mode === "tunnel" ? 0 : -8;
-        applyGalaxyLayout(btn.dataset.mode);
+        applyGalaxyLayout(btn.dataset.mode, true);
         updateSceneTransform();
         playMagicChime(587.33);
       });
@@ -1047,9 +1087,9 @@
 
       const isVid = isVideoItem(photo);
       const rotStyle = photo.rotation ? `style="transform: rotate(${photo.rotation}deg)"` : "";
-      const mediaHtml = isVid
-        ? `<video src="${photo.src}" ${rotStyle} autoplay loop muted playsinline preload="metadata"></video>`
-        : `<img src="${photo.src}" ${rotStyle} alt="${escapeHtml(photo.title)}" loading="lazy" />`;
+      const thumbUrl = getThumbSrc(photo);
+      const mediaHtml = `<img src="${thumbUrl}" ${rotStyle} alt="${escapeHtml(photo.title)}" loading="lazy" decoding="async" />`;
+      const dateBadgeText = isVid ? `▶ VIDEO • ${photo.date || "Kỷ niệm"}` : (photo.date || "Kỷ niệm");
 
       const card = document.createElement("div");
       card.className = "polaroid-card";
@@ -1062,7 +1102,7 @@
                 contenteditable="true"
                 spellcheck="false"
                 title="Nhấp để sửa ngày chụp trực tiếp"
-              >${escapeHtml(photo.date || "Kỷ niệm")}</span>
+              >${escapeHtml(dateBadgeText)}</span>
 
               <button class="polaroid-zoom-btn" type="button" title="Phóng to ảnh">⤢</button>
               <button class="polaroid-rotate-btn" type="button" title="Xoay ảnh 90°">↻</button>
@@ -1513,6 +1553,7 @@
       if (img) img.classList.add("hidden");
       if (vid) {
         vid.classList.remove("hidden");
+        vid.poster = "assets/images/ky-niem-40-poster.jpg";
         vid.src = item.src;
         vid.style.transform = rotTransform;
         vid.play().catch(() => {});
@@ -1579,7 +1620,7 @@
         const item = allPhotos[state.lightboxIndex];
         if (!item) return;
         item.date = lbDate.textContent.trim();
-        renderPolaroidAlbum(getActiveAlbumFilter());
+        syncSingleCardUI(state.lightboxIndex);
         persistPhotoEdits();
       });
     }
@@ -1590,7 +1631,6 @@
         if (!item) return;
         item.title = lbTitle.textContent.trim();
         syncSingleCardUI(state.lightboxIndex);
-        renderPolaroidAlbum(getActiveAlbumFilter());
         persistPhotoEdits();
       });
     }
@@ -1600,7 +1640,7 @@
         const item = allPhotos[state.lightboxIndex];
         if (!item) return;
         item.note = lbNote.textContent.trim();
-        renderPolaroidAlbum(getActiveAlbumFilter());
+        syncSingleCardUI(state.lightboxIndex);
         persistPhotoEdits();
       });
     }
@@ -1610,8 +1650,7 @@
         const item = allPhotos[state.lightboxIndex];
         if (!item) return;
         item.overlayText = lbOverlay.textContent.trim();
-        renderGalaxyCards();
-        renderPolaroidAlbum(getActiveAlbumFilter());
+        syncSingleCardUI(state.lightboxIndex);
         persistPhotoEdits();
       });
     }
@@ -1972,6 +2011,7 @@
 
   // ==========================================================================
   // 11. CANVAS NỀN VŨ TRỤ SAO VÀNG (STARFIELD) & PHÁO HOA (FIREWORKS)
+  //     Tối ưu tiết kiệm GPU cho Mobile (Tự động ngủ khi không dùng)
   // ==========================================================================
   function initStarfieldCanvas() {
     const canvas = document.getElementById("starfield-canvas");
@@ -1985,23 +2025,32 @@
       h = canvas.height = window.innerHeight;
     });
 
-    const stars = Array.from({ length: 220 }, () => ({
+    const isMobile = window.innerWidth <= 768;
+    const starCount = isMobile ? 60 : 160;
+
+    const stars = Array.from({ length: starCount }, () => ({
       x: (Math.random() - 0.5) * w * 2,
       y: (Math.random() - 0.5) * h * 2,
       z: Math.random() * 1000 + 50,
-      size: Math.random() * 1.8 + 0.5,
-      color: Math.random() > 0.35 ? "#fff3c4" : "#fda085",
-      twinkle: Math.random() * Math.PI * 2
+      size: Math.random() * 1.6 + 0.5,
+      color: Math.random() > 0.35 ? "#f5e6c8" : "#d4a359"
     }));
 
     function drawStars() {
+      // Trên Mobile: Tạm dừng vẽ sao nền khi đang cuộn xem lưới ảnh (stage-album) hoặc đọc thư để cuộn mượt 120Hz
+      if (isMobile && (state.currentStage === "stage-album" || state.currentStage === "stage-letter")) {
+        requestAnimationFrame(drawStars);
+        return;
+      }
+
       ctx.clearRect(0, 0, w, h);
       const cx = w / 2;
       const cy = h / 2;
 
-      for (const s of stars) {
+      ctx.fillStyle = "#f5e6c8";
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
         s.z -= 0.7 * state.warpSpeed;
-        s.twinkle += 0.04;
         if (s.z <= 10) {
           s.z = 1000;
           s.x = (Math.random() - 0.5) * w * 2;
@@ -2013,13 +2062,9 @@
         const py = cy + s.y * k;
 
         if (px >= 0 && px <= w && py >= 0 && py <= h) {
-          const r = Math.max(0.4, s.size * k * 0.55);
-          const alpha = Math.min(1, (1 - s.z / 1050) * (0.65 + 0.35 * Math.sin(s.twinkle)));
-          ctx.globalAlpha = alpha;
-          ctx.fillStyle = s.color;
-          ctx.beginPath();
-          ctx.arc(px, py, r, 0, Math.PI * 2);
-          ctx.fill();
+          const r = Math.max(0.5, s.size * k * 0.5);
+          ctx.globalAlpha = Math.min(0.85, 1 - s.z / 1050);
+          ctx.fillRect(px, py, r * 1.6, r * 1.6);
         }
       }
       ctx.globalAlpha = 1;
@@ -2028,26 +2073,29 @@
     requestAnimationFrame(drawStars);
   }
 
-  // Hệ thống Pháo Hoa & Kim Tuyến Vàng
+  // Hệ thống Pháo Hoa & Kim Tuyến Vàng (Chỉ chạy loop khi có hạt pháo hoa, tự tắt hẳn khi xong)
   const fireworkParticles = [];
+  let fireworksRunning = false;
+  let startFireworksLoop = null;
 
   function spawnFireworkBurst(x, y) {
-    const palette = ["#f6d365", "#fda085", "#fff3c4", "#ff758f", "#ffd166", "#a8e6cf"];
-    const count = 64;
+    const palette = ["#f5e6c8", "#e5cfa3", "#d4a359", "#ffffff"];
+    const count = window.innerWidth <= 768 ? 28 : 48;
     for (let i = 0; i < count; i++) {
       const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.2;
-      const speed = 2.2 + Math.random() * 6.5;
+      const speed = 2.0 + Math.random() * 5.5;
       fireworkParticles.push({
         x,
         y,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 1.2,
+        vy: Math.sin(angle) * speed - 1.0,
         alpha: 1,
-        decay: 0.012 + Math.random() * 0.014,
-        size: 2 + Math.random() * 2.8,
+        decay: 0.018 + Math.random() * 0.014,
+        size: 2 + Math.random() * 2.2,
         color: palette[Math.floor(Math.random() * palette.length)]
       });
     }
+    if (startFireworksLoop) startFireworksLoop();
   }
 
   function launchCelebrationSalvo() {
@@ -2056,8 +2104,6 @@
     spawnFireworkBurst(w * 0.5, h * 0.26);
     setTimeout(() => spawnFireworkBurst(w * 0.25, h * 0.32), 220);
     setTimeout(() => spawnFireworkBurst(w * 0.75, h * 0.3), 440);
-    setTimeout(() => spawnFireworkBurst(w * 0.38, h * 0.22), 680);
-    setTimeout(() => spawnFireworkBurst(w * 0.64, h * 0.24), 900);
     playMagicChime(523.25);
   }
 
@@ -2074,12 +2120,19 @@
     });
 
     function loopFireworks() {
+      if (fireworkParticles.length === 0) {
+        fireworksRunning = false;
+        ctx.clearRect(0, 0, w, h);
+        canvas.classList.remove("active");
+        return;
+      }
+
       ctx.clearRect(0, 0, w, h);
       for (let i = fireworkParticles.length - 1; i >= 0; i--) {
         const p = fireworkParticles[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.07; // Trọng lực nhẹ
+        p.vy += 0.07;
         p.vx *= 0.985;
         p.alpha -= p.decay;
 
@@ -2090,17 +2143,19 @@
 
         ctx.globalAlpha = p.alpha;
         ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 10;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillRect(p.x, p.y, p.size, p.size);
       }
       ctx.globalAlpha = 1;
-      ctx.shadowBlur = 0;
       requestAnimationFrame(loopFireworks);
     }
-    requestAnimationFrame(loopFireworks);
+
+    startFireworksLoop = function () {
+      if (!fireworksRunning && fireworkParticles.length > 0) {
+        fireworksRunning = true;
+        canvas.classList.add("active");
+        requestAnimationFrame(loopFireworks);
+      }
+    };
   }
 
   function escapeHtml(str) {

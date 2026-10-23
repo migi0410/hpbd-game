@@ -76,14 +76,14 @@
           <div class="portal-orbit-ring ring-mid"></div>
           <div class="portal-orbit-ring ring-inner"></div>
 
-          <!-- 6 Mảnh Ảnh Thực Tế Trôi Nổi Mờ Ảo Trong Không Gian Mở Đầu -->
+          <!-- 6 Mảnh Ảnh Thực Tế Trôi Nổi Mờ Ảo Trong Không Gian Mở Đầu (Bản Thumbnail Nhẹ Mượt) -->
           <div class="floating-preview-shards" id="portal-shards">
-            <div class="shard s1"><img src="assets/images/ky-niem-01.jpg" alt="" /></div>
-            <div class="shard s2"><img src="assets/images/ky-niem-05.jpg" alt="" /></div>
-            <div class="shard s3"><img src="assets/images/ky-niem-12.jpg" alt="" /></div>
-            <div class="shard s4"><img src="assets/images/ky-niem-19.jpg" alt="" /></div>
-            <div class="shard s5"><img src="assets/images/ky-niem-26.jpg" alt="" /></div>
-            <div class="shard s6"><img src="assets/images/ky-niem-33.jpg" alt="" /></div>
+            <div class="shard s1"><img src="assets/images/thumbs/ky-niem-01.jpg" decoding="async" alt="" /></div>
+            <div class="shard s2"><img src="assets/images/thumbs/ky-niem-05.jpg" decoding="async" alt="" /></div>
+            <div class="shard s3"><img src="assets/images/thumbs/ky-niem-12.jpg" decoding="async" alt="" /></div>
+            <div class="shard s4"><img src="assets/images/thumbs/ky-niem-19.jpg" decoding="async" alt="" /></div>
+            <div class="shard s5"><img src="assets/images/thumbs/ky-niem-26.jpg" decoding="async" alt="" /></div>
+            <div class="shard s6"><img src="assets/images/thumbs/ky-niem-33.jpg" decoding="async" alt="" /></div>
           </div>
 
           <!-- Khối Tiêu Đề Trung Tâm (Editorial Typography) -->
@@ -183,23 +183,22 @@
       </div>
 
       <div class="galaxy-viewport" id="galaxy-viewport">
-        <div class="galaxy-scene" id="galaxy-scene">
-          <!-- Tâm Gyroscope Kiến Trúc Tối Giản -->
-          <div class="galaxy-core" id="galaxy-core">
-            <div class="core-ring ring-a"></div>
-            <div class="core-ring ring-b"></div>
-            <div class="core-ring ring-c"></div>
-            <div class="core-monolith-orb">
-              <span class="core-index">2023—2026</span>
-              <span class="core-title" id="core-recipient-name">HAPPY BIRTHDAY</span>
-              <span class="core-sub">44 ARCHIVED FRAMES</span>
-            </div>
+        <!-- Lớp Tâm Nền 2D Độc Lập (Tách khỏi preserve-3d để không cắt ngang các thẻ ảnh 3D gây chớp tắt trên Mobile) -->
+        <div class="galaxy-core" id="galaxy-core">
+          <div class="core-ring ring-a"></div>
+          <div class="core-ring ring-b"></div>
+          <div class="core-monolith-orb">
+            <span class="core-index">2023—2026</span>
+            <span class="core-title" id="core-recipient-name">HAPPY BIRTHDAY</span>
+            <span class="core-sub">44 ARCHIVED FRAMES</span>
           </div>
+        </div>
 
-          <!-- 44 Khung Hình 3D -->
+        <div class="galaxy-floor-glow"></div>
+
+        <!-- Duy nhất 1 ngữ cảnh 3D chứa 44 khung hình phẳng (Không lồng preserve-3d chồng chéo) -->
+        <div class="galaxy-scene" id="galaxy-scene">
           <div class="galaxy-cards-holder" id="galaxy-cards-holder"></div>
-
-          <div class="galaxy-floor-glow"></div>
         </div>
       </div>
 

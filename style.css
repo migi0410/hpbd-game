@@ -64,6 +64,11 @@ html, body {
 
 #fireworks-canvas {
   z-index: 40;
+  display: none;
+}
+
+#fireworks-canvas.active {
+  display: block;
 }
 
 .cinematic-vignette {
@@ -71,7 +76,7 @@ html, body {
   inset: 0;
   pointer-events: none;
   z-index: 2;
-  background: radial-gradient(circle at 50% 50%, transparent 45%, rgba(3, 3, 6, 0.72) 100%);
+  background: radial-gradient(circle at 50% 50%, transparent 52%, rgba(3, 3, 6, 0.68) 100%);
 }
 
 .architectural-grid {
@@ -80,11 +85,9 @@ html, body {
   pointer-events: none;
   z-index: 1;
   background-image:
-    linear-gradient(to right, rgba(229, 207, 163, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(229, 207, 163, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(229, 207, 163, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(229, 207, 163, 0.025) 1px, transparent 1px);
   background-size: 72px 72px;
-  mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 85%);
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 85%);
 }
 
 /* ==========================================================================
@@ -255,7 +258,7 @@ html, body {
   display: none;
   width: 100%;
   min-height: calc(100dvh - 70px);
-  animation: stageReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: stageReveal 0.35s ease-out;
 }
 
 .stage-section.active {
@@ -263,8 +266,8 @@ html, body {
 }
 
 @keyframes stageReveal {
-  from { opacity: 0; transform: translateY(10px) scale(0.99); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ==========================================================================
@@ -356,10 +359,11 @@ html, body {
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(229, 207, 163, 0.28);
-  opacity: 0.34;
-  filter: grayscale(20%) contrast(108%);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
-  animation: shardFloat 7s ease-in-out infinite alternate;
+  opacity: 0.32;
+  background: #0d0d14;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
 }
 
 .shard img {
@@ -762,13 +766,14 @@ html, body {
   padding: 0 10px;
 }
 
-/* 3D Viewport */
+/* 3D Viewport - Chống Z-fighting & Chớp Tắt Trên Mobile GPU */
 .galaxy-viewport {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  perspective: 1100px;
+  perspective: 1050px;
+  -webkit-perspective: 1050px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -784,18 +789,22 @@ html, body {
 
 .galaxy-scene {
   position: relative;
+  z-index: 5;
   width: 0;
   height: 0;
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
   will-change: transform;
 }
 
-/* Tâm Gyroscope Tối Giản */
+/* Tâm Nền 2D Độc Lập (Không cắt mặt phẳng 3D của các thẻ ảnh) */
 .galaxy-core {
   position: absolute;
-  top: 0;
-  left: 0;
-  transform-style: preserve-3d;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 0;
+  height: 0;
   pointer-events: none;
 }
 
@@ -804,63 +813,49 @@ html, body {
   top: 50%;
   left: 50%;
   border-radius: 50%;
-  border: 1px solid rgba(229, 207, 163, 0.16);
-  transform-style: preserve-3d;
+  border: 1px solid rgba(229, 207, 163, 0.12);
 }
 
 .ring-a {
-  width: 520px;
-  height: 520px;
-  margin-left: -260px;
-  margin-top: -260px;
-  transform: rotateX(78deg);
+  width: min(460px, 84vw);
+  height: min(160px, 30vw);
+  transform: translate(-50%, -50%);
 }
 
 .ring-b {
-  width: 780px;
-  height: 780px;
-  margin-left: -390px;
-  margin-top: -390px;
-  transform: rotateX(78deg) rotateY(14deg);
+  width: min(680px, 96vw);
+  height: min(240px, 44vw);
+  transform: translate(-50%, -50%) rotate(-6deg);
   border-style: dashed;
-}
-
-.ring-c {
-  width: 1040px;
-  height: 1040px;
-  margin-left: -520px;
-  margin-top: -520px;
-  transform: rotateX(78deg) rotateY(-12deg);
 }
 
 .core-monolith-orb {
   position: absolute;
-  width: 150px;
-  height: 150px;
-  margin-left: -75px;
-  margin-top: -75px;
+  width: 136px;
+  height: 136px;
+  margin-left: -68px;
+  margin-top: -68px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(229, 207, 163, 0.18) 0%, rgba(5, 5, 8, 0.85) 70%);
-  border: 1px solid rgba(229, 207, 163, 0.35);
+  background: radial-gradient(circle, rgba(229, 207, 163, 0.16) 0%, rgba(5, 5, 8, 0.92) 72%);
+  border: 1px solid rgba(229, 207, 163, 0.32);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  box-shadow: 0 0 50px rgba(212, 163, 89, 0.22);
 }
 
 .core-index {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   letter-spacing: 2px;
   color: var(--gold-champagne);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .core-title {
   font-family: var(--font-serif);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 1px;
   color: var(--text-primary);
@@ -869,92 +864,98 @@ html, body {
 
 .core-sub {
   font-family: var(--font-mono);
-  font-size: 0.52rem;
+  font-size: 0.5rem;
   letter-spacing: 1.2px;
   color: var(--text-dim);
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
-/* Khung Ảnh 3D Monolith (Frameless Dark Glass) */
+/* Khung Ảnh 3D Monolith (Gộp thành 1 mặt phẳng GPU duy nhất để không bao giờ chớp tắt) */
 .galaxy-cards-holder {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform-style: preserve-3d;
+  display: contents;
 }
 
 .galaxy-card {
   position: absolute;
-  width: 144px;
-  height: 196px;
-  margin-left: -72px;
-  margin-top: -98px;
-  border-radius: 10px;
+  width: 140px;
+  height: 190px;
+  margin-left: -70px;
+  margin-top: -95px;
+  border-radius: 9px;
   padding: 4px;
-  background: rgba(14, 14, 22, 0.88);
+  background: #0d0d14;
   border: 1px solid rgba(229, 207, 163, 0.42);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.78);
-  transform-style: preserve-3d;
-  transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+  transform-style: flat;
+  -webkit-transform-style: flat;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
   cursor: pointer;
-  overflow: hidden;
+  contain: layout paint style;
+}
+
+.galaxy-scene.layout-transitioning .galaxy-card {
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .galaxy-card:hover,
 .galaxy-card:active {
   border-color: var(--gold-bright);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.9), 0 0 26px rgba(229, 207, 163, 0.55);
 }
 
-.galaxy-card img,
-.galaxy-card video {
+.galaxy-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 7px;
+  border-radius: 6px;
   display: block;
   pointer-events: none;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
 }
 
 .galaxy-card-caption {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 18px 8px 6px;
-  background: linear-gradient(to top, rgba(5, 5, 8, 0.92) 0%, transparent 100%);
+  bottom: 4px;
+  left: 4px;
+  right: 4px;
+  padding: 14px 7px 5px;
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(to top, rgba(5, 5, 8, 0.95) 0%, transparent 100%);
   font-family: var(--font-sans);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 500;
   color: var(--text-primary);
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  pointer-events: none;
 }
 
 .galaxy-card-badge {
   position: absolute;
   top: 8px;
   left: 8px;
-  background: rgba(5, 5, 8, 0.78);
+  background: rgba(5, 5, 8, 0.88);
   color: var(--gold-champagne);
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   padding: 2px 6px;
   border-radius: 4px;
   border: 1px solid rgba(229, 207, 163, 0.28);
+  pointer-events: none;
 }
 
 .galaxy-floor-glow {
   position: absolute;
-  width: 760px;
-  height: 760px;
-  margin-left: -380px;
-  margin-top: -380px;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: min(560px, 90vw);
+  height: min(320px, 55vw);
+  transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(229, 207, 163, 0.09) 0%, transparent 68%);
-  transform: translateY(240px) rotateX(90deg);
+  background: radial-gradient(circle, rgba(229, 207, 163, 0.08) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -1124,37 +1125,42 @@ html, body {
 }
 
 .polaroid-card {
-  perspective: 1000px;
   height: 360px;
+  contain: layout style;
 }
 
 .polaroid-inner {
   position: relative;
   width: 100%;
   height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
   border-radius: 14px;
-}
-
-.polaroid-card.flipped .polaroid-inner {
-  transform: rotateY(180deg) !important;
 }
 
 .polaroid-front,
 .polaroid-back {
   position: absolute;
   inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   border-radius: 14px;
   padding: 10px;
   background: #0d0d14;
   border: 1px solid var(--gold-hairline);
   color: var(--text-primary);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.polaroid-front {
+  opacity: 1;
+  visibility: visible;
+  z-index: 2;
+}
+
+.polaroid-card.flipped .polaroid-front {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0.96);
 }
 
 .polaroid-img-wrap {
@@ -1172,7 +1178,7 @@ html, body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  display: block;
 }
 
 .polaroid-date-tag {
@@ -1180,14 +1186,13 @@ html, body {
   top: 8px;
   left: 8px;
   z-index: 6;
-  background: rgba(5, 5, 8, 0.78);
+  background: rgba(6, 6, 10, 0.9);
   color: var(--gold-champagne);
   padding: 3px 9px;
   border-radius: 6px;
   font-family: var(--font-mono);
   font-size: 0.66rem;
-  border: 1px solid rgba(229, 207, 163, 0.25);
-  backdrop-filter: blur(6px);
+  border: 1px solid rgba(229, 207, 163, 0.28);
 }
 
 .polaroid-footer {
@@ -1221,14 +1226,26 @@ html, body {
   flex-shrink: 0;
 }
 
-/* Mặt sau thẻ ảnh (Dark Editorial Note) */
+/* Mặt sau thẻ ảnh (Dark Editorial Note - Chuyển mượt không dùng preserve-3d gây chớp tắt trên Mobile) */
 .polaroid-back {
-  transform: rotateY(180deg);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 1;
+  transform: scale(0.96);
   background: linear-gradient(160deg, #12121c 0%, #09090f 100%);
   border: 1px solid rgba(229, 207, 163, 0.45);
   padding: 22px 18px;
   justify-content: space-between;
   text-align: left;
+}
+
+.polaroid-card.flipped .polaroid-back {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  z-index: 3;
+  transform: scale(1);
 }
 
 .polaroid-back-ornament {
@@ -1952,9 +1969,7 @@ body.direct-edit-enabled .polaroid-editable,
   left: 8px;
   right: 8px;
   z-index: 6;
-  background: rgba(6, 6, 10, 0.78);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(6, 6, 10, 0.9);
   border: 1px dashed rgba(229, 207, 163, 0.45);
   border-radius: 6px;
   padding: 5px 8px;
@@ -2049,6 +2064,22 @@ body:not(.direct-edit-enabled) .photo-onscreen-caption:empty {
     display: none;
   }
 
+  /* Tắt các lớp phủ full-screen không cần thiết trên Mobile để giảm Overdraw GPU */
+  .architectural-grid,
+  .cinematic-vignette {
+    display: none;
+  }
+
+  .top-nav,
+  .galaxy-mode-switcher,
+  .galaxy-bottom-hud,
+  .album-toolbar,
+  .vinyl-player {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(10, 10, 16, 0.94);
+  }
+
   /* Chuyển thanh điều hướng 4 cảnh xuống Bottom Floating Dock chuẩn iOS */
   .stage-tabs {
     position: fixed;
@@ -2058,14 +2089,12 @@ body:not(.direct-edit-enabled) .photo-onscreen-caption:empty {
     width: calc(100vw - 20px);
     max-width: 420px;
     height: 54px;
-    background: var(--bg-glass-heavy);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    background: rgba(10, 10, 16, 0.96);
     border: 1px solid rgba(229, 207, 163, 0.28);
     padding: 5px;
     justify-content: space-between;
     z-index: 75;
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.85);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.85);
   }
 
   .stage-tab {
