@@ -532,6 +532,10 @@
       pauseReelsVideoIfActive();
     }
 
+    const activeSection = document.getElementById(targetId);
+    if (activeSection) {
+      activeSection.scrollTop = 0;
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
