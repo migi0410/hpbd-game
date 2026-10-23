@@ -677,26 +677,82 @@
     setText("lit-candles-count", `${state.litCandles} / ${state.totalCandles}`);
   }
 
-  // Cảm biến âm thanh qua Microphone
+  // Cảm biến âm thanh qua Microphone (Hỗ trợ tự động bật sau 10 giây kể từ khi web tải xong)
+  let autoMicInterval = null;
+
+  function clearAutoMicTimer() {
+    if (autoMicInterval) {
+      clearInterval(autoMicInterval);
+      autoMicInterval = null;
+    }
+  }
+
+  function scheduleAutoMicStart(seconds = 10) {
+    clearAutoMicTimer();
+    let remaining = seconds;
+    const micLabel = document.getElementById("mic-btn-label");
+    if (micLabel && !state.micActive) {
+      micLabel.textContent = `Cảm biến âm thanh (${remaining}s)`;
+    }
+
+    autoMicInterval = setInterval(() => {
+      // Nếu người dùng đã chuyển cảnh, đã tắt hết nến hoặc đã bật mic thủ công thì dừng đếm ngược
+      if (state.micActive || state.litCandles === 0 || state.currentStage !== "stage-cake") {
+        clearAutoMicTimer();
+        return;
+      }
+      remaining--;
+      if (remaining > 0) {
+        if (micLabel) micLabel.textContent = `Cảm biến âm thanh (${remaining}s)`;
+      } else {
+        clearAutoMicTimer();
+        startMicBlowDetection(true);
+      }
+    }, 1000);
+  }
+
   async function toggleMicBlowDetection() {
+    clearAutoMicTimer();
     if (state.micActive) {
       stopMicBlowDetection();
       return;
     }
+    await startMicBlowDetection(false);
+  }
+
+  async function startMicBlowDetection(isAutoTriggered = false) {
+    if (state.micActive) return;
+
+    const micBtn = document.getElementById("btn-mic-blow");
+    const micLabel = document.getElementById("mic-btn-label");
+    const meterBox = document.getElementById("mic-meter-box");
+    const toast = document.getElementById("wish-toast");
 
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Mic not supported");
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       state.micStream = stream;
       state.micActive = true;
 
-      const micBtn = document.getElementById("btn-mic-blow");
-      const micLabel = document.getElementById("mic-btn-label");
-      const meterBox = document.getElementById("mic-meter-box");
       if (micBtn) micBtn.classList.add("listening");
-      if (micLabel) micLabel.textContent = "Đang nghe... (Dừng)";
+      if (micLabel) micLabel.textContent = "Đang nghe hơi thổi... (Dừng)";
       if (meterBox) meterBox.classList.remove("hidden");
+      if (toast) {
+        toast.textContent = "🎙️ CẢM BIẾN ĐÃ BẬT — HÃY THỔI NHẸ VÀO MÀN HÌNH ĐỂ TẮT NẾN!";
+      }
 
       const ctx = getAudioContext();
+      if (ctx && ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+        const resumeOnTouch = () => {
+          if (ctx.state === "suspended") ctx.resume().catch(() => {});
+        };
+        window.addEventListener("pointerdown", resumeOnTouch, { once: true, passive: true });
+        window.addEventListener("touchstart", resumeOnTouch, { once: true, passive: true });
+      }
+
       const source = ctx.createMediaStreamSource(stream);
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 256;
@@ -735,14 +791,27 @@
       }
       checkBreath();
     } catch (err) {
-      const toast = document.getElementById("wish-toast");
-      if (toast) {
+      if (micLabel) micLabel.textContent = "Cảm biến âm thanh";
+      if (isAutoTriggered) {
+        // Trên một số trình duyệt di động (iOS Safari) chặn gọi Mic tự động nếu chưa chạm màn hình:
+        // Tự động bật ngay ở cú chạm đầu tiên của người dùng!
+        if (toast) {
+          toast.textContent = "CHẠM NHẸ MÀN HÌNH ĐỂ BẬT MIC THỔI NẾN HOẶC MỞ KHÔNG GIAN 3D";
+        }
+        const retryOnFirstGesture = () => {
+          if (!state.micActive && state.litCandles > 0 && state.currentStage === "stage-cake") {
+            startMicBlowDetection(false);
+          }
+        };
+        window.addEventListener("pointerdown", retryOnFirstGesture, { once: true, passive: true });
+      } else if (toast) {
         toast.textContent = "NHẤN NÚT 'KHÁM PHÁ KHÔNG GIAN 3D' BÊN DƯỚI ĐỂ BẮT ĐẦU";
       }
     }
   }
 
   function stopMicBlowDetection() {
+    clearAutoMicTimer();
     state.micActive = false;
     if (state.micAnimId) cancelAnimationFrame(state.micAnimId);
     if (state.micStream) {
@@ -2206,6 +2275,22 @@
     const fwBtn = document.getElementById("btn-launch-fireworks");
     if (fwBtn) {
       fwBtn.addEventListener("click", launchCelebrationSalvo);
+    }
+
+    // Mở khóa sẵn AudioContext ngay khi người dùng chạm nhẹ lần đầu
+    window.addEventListener(
+      "pointerdown",
+      () => {
+        getAudioContext();
+      },
+      { once: true, passive: true }
+    );
+
+    // Sau khi trang web tải xong hoàn toàn: đếm ngược 10 giây rồi tự động bật Cảm biến âm thanh
+    if (document.readyState === "complete") {
+      scheduleAutoMicStart(10);
+    } else {
+      window.addEventListener("load", () => scheduleAutoMicStart(10), { once: true });
     }
 
     // Bắn pháo hoa nhẹ chào mừng khi mới vào trang
