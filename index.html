@@ -3,190 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Chúc Mừng Sinh Nhật • Vũ Trụ Kỷ Niệm 3D</title>
+  <title>HAPPY BIRTHDAY — 3D Memory Archive</title>
 
-  <!-- Google Fonts hỗ trợ đầy đủ Tiếng Việt sang trọng & ấm áp -->
+  <!-- Fonts: Editorial Serif + Modern Geometric Sans + Monospace -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <!-- Lớp Canvas Nền Vũ Trụ Sao Vàng & Pháo Hoa -->
+<body class="direct-edit-enabled">
+  <!-- Lớp Canvas 3D Vũ Trụ Hạt Ánh Sáng & Pháo Hoa Nghệ Thuật -->
   <canvas id="starfield-canvas" aria-hidden="true"></canvas>
   <canvas id="fireworks-canvas" aria-hidden="true"></canvas>
 
-  <!-- Hiệu ứng Bokeh Ánh Sáng Ấm Áp -->
-  <div class="ambient-glow glow-1" aria-hidden="true"></div>
-  <div class="ambient-glow glow-2" aria-hidden="true"></div>
-  <div class="ambient-glow glow-3" aria-hidden="true"></div>
+  <!-- Lớp Film Grain & Vignette Điện Ảnh -->
+  <div class="cinematic-vignette" aria-hidden="true"></div>
+  <div class="architectural-grid" aria-hidden="true"></div>
 
-  <!-- Thanh Điều Hướng Trên Cùng (Top Glass HUD) -->
+  <!-- Thanh Điều Hướng Tối Giản (Luxury Editorial HUD) -->
   <header class="top-nav">
     <div class="brand-logo" id="brand-home-btn" title="Về màn hình chính">
-      <span class="brand-icon">✨</span>
+      <span class="brand-dot"></span>
       <div class="brand-text">
-        <span class="brand-title">Vũ Trụ Kỷ Niệm</span>
-        <span class="brand-sub" id="nav-recipient-tag">Mừng Sinh Nhật</span>
+        <span class="brand-title">ARCHIVE // 23.10</span>
+        <span class="brand-sub" id="nav-recipient-tag">44 MEMORIES</span>
       </div>
     </div>
 
-    <nav class="stage-tabs" aria-label="Chuyển cảnh">
+    <nav class="stage-tabs" aria-label="Chuyển không gian">
       <button class="stage-tab active" data-target="stage-cake">
-        <span class="tab-icon">🎂</span>
-        <span class="tab-label">1. Thổi Nến</span>
+        <span class="tab-idx">01</span>
+        <span class="tab-label">PORTAL</span>
       </button>
       <button class="stage-tab" data-target="stage-galaxy">
-        <span class="tab-icon">🌌</span>
-        <span class="tab-label">2. Ngân Hà 3D</span>
+        <span class="tab-idx">02</span>
+        <span class="tab-label">3D UNIVERSE</span>
         <span class="photo-count-badge" id="galaxy-count-badge">44</span>
       </button>
       <button class="stage-tab" data-target="stage-album">
-        <span class="tab-icon">🖼️</span>
-        <span class="tab-label">3. Album Polaroid</span>
+        <span class="tab-idx">03</span>
+        <span class="tab-label">EXHIBITION</span>
       </button>
       <button class="stage-tab" data-target="stage-letter">
-        <span class="tab-icon">💌</span>
-        <span class="tab-label">4. Thư & Lời Chúc</span>
+        <span class="tab-idx">04</span>
+        <span class="tab-label">MESSAGE</span>
       </button>
     </nav>
 
     <div class="nav-actions">
-      <button class="action-pill firework-btn" id="btn-launch-fireworks" title="Bắn pháo hoa chúc mừng">
-        <span>🎆</span> <span class="hide-sm">Pháo hoa</span>
+      <button class="action-pill" id="btn-launch-fireworks" title="Hiệu ứng pháo sáng">
+        <span>✦</span> <span class="hide-sm">Spark</span>
       </button>
       <button class="action-pill active-edit-pill" id="btn-quick-save-vercel" title="Lưu toàn bộ chỉnh sửa & Copy Link chia sẻ trên Vercel">
-        <span>💾</span> <span class="hide-sm">Lưu & Lấy Link</span>
+        <span>⇪</span> <span class="hide-sm">Lưu & Copy Link</span>
       </button>
-      <button class="action-pill customize-btn" id="btn-open-customizer" title="Tùy chỉnh, Xuất file config.js & Cài đặt lưu Vercel">
-        <span>⚙️</span> <span class="hide-sm">Tùy chỉnh / Vercel</span>
+      <button class="action-pill" id="btn-open-customizer" title="Tùy chỉnh & Thêm ảnh / nhạc">
+        <span>⚙</span> <span class="hide-sm">Tùy chỉnh</span>
       </button>
     </div>
   </header>
 
-  <!-- =====================================================================
-       CẢNH 1: MÀN MỞ ĐẦU - BÁNH KEM 3D & THỔI NẾN ƯỚC NGUYỆN
-       ===================================================================== -->
   <main class="stages-container">
+    <!-- =====================================================================
+         01. MÀN MỞ ĐẦU: CỔNG KHÔNG GIAN 3D & LÕI NĂNG LƯỢNG (PORTAL)
+         ===================================================================== -->
     <section id="stage-cake" class="stage-section active">
-      <div class="cake-stage-wrapper">
-        <!-- Phần Tiêu Đề Chúc Mừng Ấm Áp (Có thể nhấp vào để sửa trực tiếp) -->
-        <div class="hero-header">
-          <div class="hero-badge" id="hero-badge">✨ CHÚC MỪNG SINH NHẬT • HAPPY BIRTHDAY ✨</div>
-          <h1
-            class="hero-title editable-field"
-            id="hero-recipient-name"
-            contenteditable="true"
-            spellcheck="false"
-            title="Nhấp để sửa trực tiếp Tên người nhận"
-          >Người Thân Yêu Quý</h1>
-          <p
-            class="hero-subtitle editable-field"
-            id="hero-recipient-subtitle"
-            contenteditable="true"
-            spellcheck="false"
-            title="Nhấp để sửa trực tiếp lời đề tặng"
-          >
-            Điểm tựa ấm áp & yêu thương nhất của cả gia đình
-          </p>
-          <div class="hero-date-pill">
-            <span>📅 Ngày đặc biệt:</span>
-            <strong
-              class="editable-field"
-              id="hero-birthday-date"
+      <div class="portal-stage-wrapper">
+        <!-- Vòng Lõi Năng Lượng 3D & Các Mảnh Ký Ức Bay Lơ Lửng Phía Sau -->
+        <div class="portal-visual-center" id="cake-3d-container">
+          <div class="portal-orbit-ring ring-outer"></div>
+          <div class="portal-orbit-ring ring-mid"></div>
+          <div class="portal-orbit-ring ring-inner"></div>
+
+          <!-- 6 Mảnh Ảnh Thực Tế Trôi Nổi Mờ Ảo Trong Không Gian Mở Đầu -->
+          <div class="floating-preview-shards" id="portal-shards">
+            <div class="shard s1"><img src="assets/images/ky-niem-01.jpg" alt="" /></div>
+            <div class="shard s2"><img src="assets/images/ky-niem-05.jpg" alt="" /></div>
+            <div class="shard s3"><img src="assets/images/ky-niem-12.jpg" alt="" /></div>
+            <div class="shard s4"><img src="assets/images/ky-niem-19.jpg" alt="" /></div>
+            <div class="shard s5"><img src="assets/images/ky-niem-26.jpg" alt="" /></div>
+            <div class="shard s6"><img src="assets/images/ky-niem-33.jpg" alt="" /></div>
+          </div>
+
+          <!-- Khối Tiêu Đề Trung Tâm (Editorial Typography) -->
+          <div class="hero-header">
+            <div class="hero-meta-row">
+              <span class="hero-badge" id="hero-badge">SPECIAL ARCHIVE • 44 MEMORIES</span>
+              <span class="hero-divider">—</span>
+              <strong
+                class="hero-date-inline editable-field"
+                id="hero-birthday-date"
+                contenteditable="true"
+                spellcheck="false"
+                title="Nhấp để sửa ngày"
+              >23 . 10 . 2026</strong>
+            </div>
+
+            <h1
+              class="hero-title editable-field"
+              id="hero-recipient-name"
               contenteditable="true"
               spellcheck="false"
-              title="Nhấp để sửa trực tiếp ngày sinh nhật"
-            >23 • 10 • 2026</strong>
+              title="Nhấp để sửa trực tiếp Tiêu đề / Tên"
+            >HAPPY BIRTHDAY</h1>
+
+            <p
+              class="hero-subtitle editable-field"
+              id="hero-recipient-subtitle"
+              contenteditable="true"
+              spellcheck="false"
+              title="Nhấp để sửa trực tiếp dòng mô tả"
+            >
+              Hành trình 44 khoảnh khắc đáng nhớ • 2023 — 2026
+            </p>
           </div>
-        </div>
 
-        <!-- Khu Vực Bánh Kem 3D & 5 Ngọn Nến Ước Nguyện -->
-        <div class="cake-interactive-zone">
-          <!-- Thông báo lời ước khi thổi từng ngọn nến -->
-          <div class="wish-floating-toast" id="wish-toast" aria-live="polite">
-            🕯️ Hãy nhắm mắt ước một điều thật đẹp và thổi tắt những ngọn nến nhé!
-          </div>
-
-          <div class="cake-3d-container" id="cake-3d-container" title="Chạm vào nến để thổi tắt">
-            <!-- Hào quang phía sau bánh -->
-            <div class="cake-aura"></div>
-
-            <!-- Cắm chữ Happy Birthday mạ vàng -->
-            <div class="cake-topper">
-              <span id="cake-topper-text">Happy Birthday</span>
+          <!-- 5 Cột Ánh Sáng Ước Nguyện Tối Giản (Minimalist Light Filaments) -->
+          <div class="light-pillars-block">
+            <div class="wish-floating-toast" id="wish-toast" aria-live="polite">
+              CHẠM VÀO CÁC CỘT SÁNG HOẶC KÍCH HOẠT CỔNG KHÔNG GIAN 3D
             </div>
-
-            <!-- Dàn 5 Ngọn Nến Tương Tác -->
             <div class="candles-row" id="candles-row">
-              <!-- Sẽ được tạo tự động bằng JS từ config.candleWishes -->
+              <!-- Sinh tự động 5 cột ánh sáng từ JS -->
             </div>
-
-            <!-- Tầng Bánh Trên (Upper Tier) -->
-            <div class="cake-tier tier-top">
-              <div class="frosting-drip drip-1"></div>
-              <div class="frosting-drip drip-2"></div>
-              <div class="frosting-drip drip-3"></div>
-              <div class="frosting-drip drip-4"></div>
-              <div class="frosting-drip drip-5"></div>
-              <div class="tier-pearls"></div>
-            </div>
-
-            <!-- Tầng Bánh Giữa (Middle Tier) -->
-            <div class="cake-tier tier-middle">
-              <div class="frosting-drip drip-1"></div>
-              <div class="frosting-drip drip-2"></div>
-              <div class="frosting-drip drip-3"></div>
-              <div class="frosting-drip drip-4"></div>
-              <div class="frosting-drip drip-5"></div>
-              <div class="frosting-drip drip-6"></div>
-              <div class="tier-garland"></div>
-              <div class="tier-pearls"></div>
-            </div>
-
-            <!-- Tầng Bánh Dưới (Bottom Tier) -->
-            <div class="cake-tier tier-bottom">
-              <div class="frosting-drip drip-1"></div>
-              <div class="frosting-drip drip-2"></div>
-              <div class="frosting-drip drip-3"></div>
-              <div class="frosting-drip drip-4"></div>
-              <div class="frosting-drip drip-5"></div>
-              <div class="frosting-drip drip-6"></div>
-              <div class="frosting-drip drip-7"></div>
-              <div class="tier-ribbon"></div>
-              <div class="tier-pearls"></div>
-            </div>
-
-            <!-- Đế Bánh Mạ Vàng -->
-            <div class="cake-plate"></div>
-            <div class="cake-pedestal"></div>
+            <span class="hidden" id="cake-topper-text">2026</span>
           </div>
 
-          <!-- Bộ Điều Khiển Thổi Nến (Micro thật + Chạm trực tiếp) -->
-          <div class="blow-controls-card">
-            <div class="candles-status-bar">
-              <span>Ngọn nến đang cháy: <strong id="lit-candles-count">5 / 5</strong></span>
-              <button class="btn-relight hidden" id="btn-relight-candles">🔥 Thắp sáng lại nến</button>
-            </div>
-
+          <!-- Nút Kích Hoạt Bước Vào Vũ Trụ 3D -->
+          <div class="portal-trigger-zone">
             <div class="blow-buttons-row">
-              <button class="btn-primary-gold" id="btn-blow-all">
-                <span class="btn-sparkle">✨</span>
-                <span id="btn-blow-text">Thổi Nến & Mở Vũ Trụ Kỷ Niệm 3D</span>
-                <span class="btn-sparkle">💨</span>
+              <button class="btn-enter-universe" id="btn-blow-all">
+                <span class="enter-ring"></span>
+                <span id="btn-blow-text">KHÁM PHÁ KHÔNG GIAN 3D</span>
+                <span class="enter-arrow">→</span>
               </button>
 
-              <button class="btn-mic-toggle" id="btn-mic-blow">
-                <span class="mic-icon">🎤</span>
-                <span id="mic-btn-label">Thổi bằng Micro</span>
+              <button class="btn-mic-toggle" id="btn-mic-blow" title="Dùng hơi thổi hoặc âm thanh để kích hoạt">
+                <span class="mic-dot"></span>
+                <span id="mic-btn-label">Cảm biến âm thanh</span>
               </button>
+
+              <button class="btn-relight hidden" id="btn-relight-candles">↺ Đặt lại</button>
             </div>
 
-            <!-- Thanh đo hơi thổi Micro (hiện khi bật Micro) -->
+            <div class="candles-status-bar">
+              <span>NĂNG LƯỢNG KÍCH HOẠT: <strong id="lit-candles-count">5 / 5</strong></span>
+            </div>
+
             <div class="mic-meter-box hidden" id="mic-meter-box">
               <div class="mic-meter-header">
-                <span>🎙️ Hãy thổi mạnh vào micro điện thoại / máy tính...</span>
+                <span>CẢM BIẾN ÂM THANH ĐANG HOẠT ĐỘNG...</span>
                 <span id="mic-level-text">0%</span>
               </div>
               <div class="mic-meter-track">
@@ -199,137 +166,126 @@
     </section>
 
     <!-- =====================================================================
-         CẢNH 2: VŨ TRỤ KỶ NIỆM 3D XOAY 360° (GALAXY / CAROUSEL / SPHERE)
+         02. KHÔNG GIAN 3D ĐA CHIỀU (VORTEX / TIME TUNNEL / RING / SPHERE)
          ===================================================================== -->
     <section id="stage-galaxy" class="stage-section">
-      <!-- Hướng dẫn & Chuyển chế độ hiển thị 3D -->
       <div class="galaxy-top-bar">
-        <div class="galaxy-mode-switcher" role="group" aria-label="Kiểu không gian 3D">
-          <button class="mode-btn active" data-mode="helix">🌀 Ngân Hà Xoắn Ốc</button>
-          <button class="mode-btn" data-mode="ring">🎠 Vòng Xoay 360°</button>
-          <button class="mode-btn" data-mode="sphere">🌐 Quả Cầu Ký Ức</button>
+        <div class="galaxy-mode-switcher" role="group" aria-label="Cấu trúc không gian 3D">
+          <button class="mode-btn active" data-mode="helix">01 / VORTEX GALAXY</button>
+          <button class="mode-btn" data-mode="tunnel">02 / TIME TUNNEL</button>
+          <button class="mode-btn" data-mode="ring">03 / 360° ORBIT</button>
+          <button class="mode-btn" data-mode="sphere">04 / SPHERE MATRIX</button>
         </div>
 
         <div class="galaxy-hint">
-          <span>🖐️ Kéo chuột / vuốt để xoay 360° • Cuộn để thu phóng • Chạm vào ảnh để xem rõ</span>
+          <span>KÉO ĐỂ XOAY 360° • CUỘN CHUỘT ĐỂ BAY XUYÊN KHÔNG GIAN • CHẠM VÀO ẢNH ĐỂ MỞ & SỬA</span>
         </div>
       </div>
 
-      <!-- Không gian 3D Viewport -->
       <div class="galaxy-viewport" id="galaxy-viewport">
         <div class="galaxy-scene" id="galaxy-scene">
-          <!-- Tâm Ngân Hà Phát Sáng -->
+          <!-- Tâm Gyroscope Kiến Trúc Tối Giản -->
           <div class="galaxy-core" id="galaxy-core">
             <div class="core-ring ring-a"></div>
             <div class="core-ring ring-b"></div>
             <div class="core-ring ring-c"></div>
-            <div class="core-heart-orb">
-              <span class="core-emoji">💖</span>
-              <span class="core-title" id="core-recipient-name">Gia Đình Yêu Thương</span>
-              <span class="core-sub">Vũ Trụ Kỷ Niệm 3D</span>
+            <div class="core-monolith-orb">
+              <span class="core-index">2023—2026</span>
+              <span class="core-title" id="core-recipient-name">HAPPY BIRTHDAY</span>
+              <span class="core-sub">44 ARCHIVED FRAMES</span>
             </div>
           </div>
 
-          <!-- Các Khung Ảnh 3D sẽ được JS sinh ra tại đây -->
+          <!-- 44 Khung Hình 3D -->
           <div class="galaxy-cards-holder" id="galaxy-cards-holder"></div>
 
-          <!-- Mặt Sàn Phản Chiếu Ánh Sáng -->
           <div class="galaxy-floor-glow"></div>
         </div>
       </div>
 
-      <!-- Thanh Điều Khiển 3D Phía Dưới (Bottom HUD) -->
       <div class="galaxy-bottom-hud">
-        <button class="hud-btn" id="btn-toggle-autorotate" title="Bật/Tắt tự động xoay">
-          <span>⏸️</span> <span id="autorotate-label">Đang xoay tự động</span>
+        <button class="hud-btn" id="btn-toggle-autorotate">
+          <span id="autorotate-label">⏸ TẠM DỪNG XOAY</span>
         </button>
-        <button class="hud-btn" id="btn-zoom-in" title="Phóng to không gian 3D">➕ Phóng to</button>
-        <button class="hud-btn" id="btn-zoom-out" title="Thu nhỏ không gian 3D">➖ Thu nhỏ</button>
-        <button class="hud-btn" id="btn-random-memory" title="Bay tới một kỷ niệm ngẫu nhiên">🎲 Kỷ niệm ngẫu nhiên</button>
-        <button class="hud-btn highlight" id="btn-start-slideshow" title="Trình chiếu toàn màn hình">▶️ Trình chiếu Cinema</button>
+        <button class="hud-btn" id="btn-zoom-in">＋ TIẾN GẦN</button>
+        <button class="hud-btn" id="btn-zoom-out">－ LÙI XA</button>
+        <button class="hud-btn" id="btn-random-memory">✦ NGẪU NHIÊN</button>
+        <button class="hud-btn highlight" id="btn-start-slideshow">▶ CINEMA MODE</button>
       </div>
     </section>
 
     <!-- =====================================================================
-         CẢNH 3: TƯỜNG ẢNH POLAROID & ALBUM ĐẠI GIA ĐÌNH
+         03. TRIỂN LÃM ẢNH & CHỈNH SỬA TRỰC TIẾP (EDITORIAL EXHIBITION)
          ===================================================================== -->
     <section id="stage-album" class="stage-section">
       <div class="section-container">
         <div class="section-header">
-          <span class="section-eyebrow">📸 BỘ SƯU TẬP KHOẢNH KHẮC VÔ GIÁ</span>
-          <h2 class="section-title">Tường Ảnh Kỷ Niệm Gia Đình</h2>
+          <span class="section-eyebrow">ARCHIVE EXHIBITION // 44 FRAMES</span>
+          <h2 class="section-title">Bộ Sưu Tập Khoảnh Khắc</h2>
           <p class="section-desc">
-            Mỗi bức ảnh là một câu chuyện ấm áp. Bạn có thể nhấn <strong>"🔄 Lật ảnh"</strong> để đọc lời nhắn phía sau hoặc nhấn vào ảnh để phóng to toàn màn hình.
+            Nhấp trực tiếp vào bất kỳ dòng chữ nào trên ảnh để chỉnh sửa nội dung. Mọi thay đổi được tự động lưu tức thì.
           </p>
 
-          <!-- Bộ lọc danh mục + Nút thêm ảnh nhanh -->
           <div class="album-toolbar">
             <div class="filter-pills" id="album-filter-pills">
-              <button class="filter-pill active" data-filter="all">✨ Tất cả (<span id="count-all">44</span>)</button>
-              <button class="filter-pill" data-filter="sum-vay">🏡 Sum vầy</button>
-              <button class="filter-pill" data-filter="ky-niem">🕯️ Kỷ niệm</button>
-              <button class="filter-pill" data-filter="du-lich">✈️ Hành trình</button>
-              <button class="filter-pill" data-filter="nu-cuoi">😊 Nụ cười</button>
+              <button class="filter-pill active" data-filter="all">TẤT CẢ (<span id="count-all">44</span>)</button>
+              <button class="filter-pill" data-filter="sum-vay">GẶP GỠ</button>
+              <button class="filter-pill" data-filter="du-lich">HÀNH TRÌNH</button>
+              <button class="filter-pill" data-filter="ky-niem">KỶ NIỆM</button>
+              <button class="filter-pill" data-filter="nu-cuoi">KHOẢNH KHẮC</button>
             </div>
 
             <div class="album-actions">
-              <button class="btn-outline-gold active-edit-pill" id="btn-toggle-edit-mode" title="Bật/Tắt khung gợi ý sửa trực tiếp trên ảnh">
-                ✏️ Đang bật sửa trực tiếp trên ảnh
+              <button class="btn-outline-gold active-edit-pill" id="btn-toggle-edit-mode">
+                ✎ ĐANG BẬT SỬA TRỰC TIẾP
               </button>
-              <button class="btn-outline-gold" id="btn-copy-share-link" title="Lưu toàn bộ chỉnh sửa & Copy Link chia sẻ (Tải lại trang vẫn còn nguyên)">
-                💾 Lưu & Copy Link
+              <button class="btn-outline-gold" id="btn-copy-share-link">
+                ⇪ LƯU & COPY LINK
               </button>
-              <button class="btn-outline-gold" id="btn-clear-sample-text" title="Xóa các câu chữ mẫu tự động để bạn tự gõ mới">
-                🧹 Xóa chữ mẫu
+              <button class="btn-outline-gold" id="btn-clear-sample-text">
+                ⌫ ĐẶT LẠI CHỮ MẶC ĐỊNH
               </button>
-              <button class="btn-outline-gold" id="btn-flip-all-polaroids">🔄 Lật tất cả thẻ ảnh</button>
+              <button class="btn-outline-gold" id="btn-flip-all-polaroids">⇄ LẬT THẺ</button>
               <label class="btn-upload-inline" for="quick-photo-input">
-                <span>➕ Thêm ảnh từ máy</span>
+                <span>＋ THÊM ẢNH</span>
                 <input type="file" id="quick-photo-input" multiple accept="image/*,video/*" hidden />
               </label>
             </div>
           </div>
         </div>
 
-        <!-- Lưới Polaroid (JS render) -->
         <div class="polaroid-grid" id="polaroid-grid"></div>
       </div>
     </section>
 
     <!-- =====================================================================
-         CẢNH 4: BỨC THƯ TAY PHONG BÌ SÁP VÀNG & LỜI CHÚC GIA ĐÌNH
+         04. THƯ CHÚC MỪNG & LỜI NHẮN (EDITORIAL MESSAGE)
          ===================================================================== -->
     <section id="stage-letter" class="stage-section">
       <div class="section-container">
         <div class="section-header">
-          <span class="section-eyebrow">💌 NHỮNG LỜI YÊU THƯƠNG TỪ ĐÁY LÒNG</span>
-          <h2 class="section-title">Bức Thư Sinh Nhật & Lời Chúc Gia Đình</h2>
+          <span class="section-eyebrow">PERSONAL NOTE // DEDICATION</span>
+          <h2 class="section-title">Lời Chúc Sinh Nhật</h2>
           <p class="section-desc">
-            Chạm vào con dấu sáp vàng để mở phong bì thư đặc biệt dành riêng cho ngày sinh nhật hôm nay.
+            Bạn có thể nhấp trực tiếp vào nội dung bức thư bên dưới để chỉnh sửa theo ý muốn.
           </p>
         </div>
 
-        <!-- Phong bì thư 3D mở nắp -->
         <div class="envelope-stage">
-          <div class="envelope-wrapper" id="envelope-wrapper">
-            <div class="envelope-back"></div>
-
-            <!-- Tờ thư bên trong (Có thể nhấp trực tiếp để sửa lời chúc) -->
+          <div class="envelope-wrapper opened" id="envelope-wrapper">
             <div class="letter-paper" id="letter-paper">
-              <div class="letter-ornament-top">❦ ✦ ❦</div>
+              <div class="letter-ornament-top">23 . 10 . 2026</div>
               <h3
                 class="letter-greeting polaroid-editable"
                 id="letter-greeting"
                 contenteditable="true"
                 spellcheck="false"
-                title="Nhấp để sửa lời chào mở đầu thư"
-              >Gửi người thân yêu quý nhất của gia đình mình,</h3>
+              >Chúc mừng sinh nhật,</h3>
               <div
                 class="letter-body polaroid-editable"
                 id="letter-body-content"
                 contenteditable="true"
                 spellcheck="false"
-                title="Nhấp để sửa trực tiếp nội dung bức thư"
               ></div>
               <div class="letter-footer">
                 <p
@@ -337,35 +293,27 @@
                   id="letter-closing"
                   contenteditable="true"
                   spellcheck="false"
-                >Thương chúc sinh nhật thật ấm áp và hạnh phúc,</p>
+                >Best wishes,</p>
                 <p
                   class="letter-signature polaroid-editable"
                   id="letter-signature"
                   contenteditable="true"
                   spellcheck="false"
-                >Đại Gia Đình Yêu Thương ❤️</p>
+                >From Family</p>
               </div>
               <div class="letter-controls">
-                <button class="btn-text-gold" id="btn-skip-typing">⏩ Hiện toàn bộ thư ngay</button>
-                <button class="btn-text-gold" id="btn-replay-typing">✍️ Hiệu ứng viết lại</button>
+                <button class="btn-text-gold" id="btn-skip-typing">HIỆN TOÀN BỘ</button>
+                <button class="btn-text-gold" id="btn-replay-typing">CHẠY HIỆU ỨNG CHỮ</button>
               </div>
             </div>
-
-            <!-- Nắp phong bì & Dấu sáp vàng -->
-            <div class="envelope-front"></div>
-            <div class="envelope-flap" id="envelope-flap"></div>
-            <button class="wax-seal-btn" id="btn-open-envelope" aria-label="Mở phong bì thư">
-              <span class="seal-inner">❤️</span>
-              <span class="seal-tooltip">Chạm để mở thư</span>
-            </button>
+            <button class="wax-seal-btn hidden" id="btn-open-envelope" aria-label="Mở thư"></button>
           </div>
         </div>
 
-        <!-- Góc Lời Chúc Từ Các Thành Viên Trong Gia Đình -->
         <div class="wishes-wall-section">
           <div class="wishes-wall-header">
-            <h3>🌟 Góc Lời Chúc Từ Các Thành Viên</h3>
-            <button class="btn-outline-gold" id="btn-add-wish-modal">✍️ Viết thêm lời chúc mới</button>
+            <h3>LỜI CHÚC KỶ NIỆM</h3>
+            <button class="btn-outline-gold" id="btn-add-wish-modal">＋ THÊM LỜI CHÚC</button>
           </div>
           <div class="wishes-grid" id="wishes-grid"></div>
         </div>
@@ -374,24 +322,19 @@
   </main>
 
   <!-- =====================================================================
-       MÁY PHÁT NHẠC ĐĨA THAN CỔ ĐIỂN (FLOATING VINYL RECORD PLAYER)
+       MÁY PHÁT NHẠC ĐĨA THAN HIỆN ĐẠI (MINIMALIST VINYL DECK)
        ===================================================================== -->
-  <aside class="vinyl-player" id="vinyl-player" aria-label="Máy phát nhạc sinh nhật">
-    <!-- Nút thu gọn / mở rộng máy đĩa than -->
-    <button class="vinyl-collapse-btn" id="btn-toggle-vinyl-panel" title="Thu gọn / Mở rộng máy phát nhạc">
-      <span>🎵</span>
+  <aside class="vinyl-player" id="vinyl-player" aria-label="Trình phát nhạc">
+    <button class="vinyl-collapse-btn" id="btn-toggle-vinyl-panel" title="Thu gọn / Mở rộng">
+      <span>♫</span>
     </button>
 
-    <!-- Các nốt nhạc bay lên khi đang phát -->
     <div class="floating-notes" id="floating-notes" aria-hidden="true">
       <span class="note n1">♪</span>
       <span class="note n2">♫</span>
-      <span class="note n3">♬</span>
-      <span class="note n4">✨</span>
     </div>
 
     <div class="vinyl-turntable">
-      <!-- Đĩa than xoay tròn -->
       <div class="vinyl-disc" id="vinyl-disc">
         <div class="vinyl-grooves"></div>
         <div class="vinyl-center-label">
@@ -399,7 +342,6 @@
           <div class="vinyl-spindle"></div>
         </div>
       </div>
-      <!-- Cần đọc đĩa (Tonearm) -->
       <div class="vinyl-tonearm" id="vinyl-tonearm"></div>
     </div>
 
@@ -407,175 +349,161 @@
       <div class="track-meta">
         <span class="track-status-dot" id="track-status-dot"></span>
         <div class="track-text-wrap">
-          <div class="track-title" id="track-title">Happy Birthday (Warm Piano)</div>
-          <div class="track-artist" id="track-artist">Giai Điệu Sinh Nhật Ấm Áp</div>
+          <div class="track-title" id="track-title">Birthday Melodies</div>
+          <div class="track-artist" id="track-artist">Instrumental Session</div>
         </div>
       </div>
 
       <div class="player-buttons">
         <button class="p-btn" id="btn-prev-track" title="Bài trước">⏮</button>
-        <button class="p-btn play-main" id="btn-play-pause" title="Phát / Tạm dừng nhạc">▶</button>
-        <button class="p-btn" id="btn-next-track" title="Bài tiếp theo">⏭</button>
+        <button class="p-btn play-main" id="btn-play-pause" title="Phát / Tạm dừng">▶</button>
+        <button class="p-btn" id="btn-next-track" title="Bài tiếp">⏭</button>
         <div class="volume-wrap" title="Âm lượng">
-          <span class="vol-icon" id="vol-icon">🔊</span>
           <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.8" />
         </div>
-        <label class="p-btn upload-music-btn" for="quick-music-input" title="Chọn file nhạc MP3/WAV từ máy tính">
-          📂
+        <label class="p-btn upload-music-btn" for="quick-music-input" title="Chọn file nhạc MP3/WAV từ máy">
+          ＋
           <input type="file" id="quick-music-input" accept="audio/*" hidden />
         </label>
       </div>
     </div>
 
-    <!-- Thẻ Audio HTML5 -->
     <audio id="bg-audio" preload="auto" loop></audio>
   </aside>
 
   <!-- =====================================================================
-       LIGHTBOX XEM ẢNH RẠP CHIẾU PHIM & TRÌNH CHIẾU (CINEMA LIGHTBOX)
+       CINEMA LIGHTBOX & TRÌNH CHỈNH SỬA TRỰC TIẾP TRÊN ẢNH
        ===================================================================== -->
   <div class="lightbox-modal hidden" id="lightbox-modal" role="dialog" aria-modal="true">
     <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
     <div class="lightbox-content">
       <button class="lightbox-close" id="btn-close-lightbox" title="Đóng (Esc)">✕</button>
 
-      <button class="lightbox-nav prev" id="btn-lightbox-prev" title="Ảnh trước (←)">❮</button>
+      <button class="lightbox-nav prev" id="btn-lightbox-prev" title="Ảnh trước (←)">←</button>
       <div class="lightbox-main-stage">
         <div class="lightbox-img-frame">
-          <img src="" alt="Kỷ niệm gia đình" id="lightbox-img" />
+          <img src="" alt="Kỷ niệm" id="lightbox-img" />
           <video src="" id="lightbox-video" class="hidden" controls playsinline loop></video>
-          <!-- Chữ nổi trực tiếp trên mặt bức hình (bấm vào để gõ trực tiếp lên ảnh) -->
           <div
             class="photo-onscreen-caption lightbox-onscreen-caption"
             id="lightbox-overlay-text"
             contenteditable="true"
             spellcheck="false"
-            data-placeholder="✍️ Nhấp vào đây để viết chữ trực tiếp lên mặt bức hình..."
+            data-placeholder="✎ Nhấp vào đây để viết chữ trực tiếp lên mặt bức hình..."
           ></div>
-          <button class="btn-rotate-photo" id="btn-lightbox-rotate" title="Xoay bức hình 90°">🔄 Xoay ảnh</button>
+          <button class="btn-rotate-photo" id="btn-lightbox-rotate" title="Xoay bức hình 90°">↻ Xoay 90°</button>
         </div>
         <div class="lightbox-caption-panel">
           <div class="edit-hint-banner">
-            ✏️ <strong>Chế độ sửa trực tiếp:</strong> Nhấp chuột vào bất kỳ dòng chữ nào bên dưới (hoặc chữ trên mặt hình) để gõ nội dung mới. Hệ thống sẽ tự động lưu!
+            <strong>CHẾ ĐỘ SỬA TRỰC TIẾP:</strong> Nhấp vào bất kỳ dòng chữ nào bên dưới hoặc trên mặt ảnh để chỉnh sửa. Tự động lưu tức thì.
           </div>
           <div class="lightbox-meta-row">
-            <span class="lightbox-index" id="lightbox-index">1 / 44</span>
+            <span class="lightbox-index" id="lightbox-index">01 / 44</span>
             <span
               class="lightbox-date editable-field"
               id="lightbox-date"
               contenteditable="true"
               spellcheck="false"
-              title="Nhấp để sửa ngày chụp"
-            >Kỷ niệm Gia đình</span>
+            >2025</span>
           </div>
           <h3
             class="lightbox-title editable-field"
             id="lightbox-title"
             contenteditable="true"
             spellcheck="false"
-            title="Nhấp để sửa tiêu đề bức hình"
-          >Khoảnh Khắc Sum Vầy</h3>
+          >Khoảnh khắc #01</h3>
           <p
             class="lightbox-note editable-field"
             id="lightbox-note"
             contenteditable="true"
             spellcheck="false"
-            title="Nhấp để sửa câu chuyện / lời nhắn của bức hình"
-          >
-            Nơi bình yên nhất trên thế gian luôn là nơi có gia đình mình quây quần bên nhau.
-          </p>
+          ></p>
           <div class="lightbox-category-row">
-            <label for="lightbox-category-select">Nhóm kỷ niệm:</label>
+            <label for="lightbox-category-select">Phân loại:</label>
             <select id="lightbox-category-select" class="category-select">
-              <option value="sum-vay">🏡 Sum vầy</option>
-              <option value="ky-niem">🕯️ Kỷ niệm</option>
-              <option value="du-lich">✈️ Hành trình</option>
-              <option value="nu-cuoi">😊 Nụ cười</option>
+              <option value="sum-vay">Gặp gỡ</option>
+              <option value="du-lich">Hành trình</option>
+              <option value="ky-niem">Kỷ niệm</option>
+              <option value="nu-cuoi">Khoảnh khắc</option>
             </select>
           </div>
           <div class="lightbox-actions-bar">
             <button class="btn-slideshow-toggle" id="btn-lightbox-slideshow">
-              ▶️ Tự động chuyển ảnh (Slideshow)
+              ▶ TRÌNH CHIẾU TỰ ĐỘNG (SLIDESHOW)
             </button>
           </div>
         </div>
       </div>
-      <button class="lightbox-nav next" id="btn-lightbox-next" title="Ảnh tiếp theo (→)">❯</button>
+      <button class="lightbox-nav next" id="btn-lightbox-next" title="Ảnh tiếp theo (→)">→</button>
     </div>
   </div>
 
   <!-- =====================================================================
-       BẢNG TÙY CHỈNH NHANH & THÊM ẢNH / NHẠC TRỰC TIẾP (CUSTOMIZER MODAL)
+       MODAL TÙY CHỈNH & LƯU LINK VERCEL
        ===================================================================== -->
   <div class="modal-overlay hidden" id="customizer-modal" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>⚙️ Tùy Chỉnh Nhanh & Thêm Ảnh / Nhạc</h3>
+        <h3>TÙY CHỈNH & LƯU TRỮ</h3>
         <button class="modal-close-btn" id="btn-close-customizer">✕</button>
       </div>
 
       <div class="modal-body">
         <div class="customizer-grid">
-          <!-- Cột 1: Tải thêm ảnh & nhạc ngay trên trình duyệt -->
           <div class="customizer-box">
-            <h4>📸 1. Thêm nhiều ảnh & nhạc ngay tức thì</h4>
+            <h4>1. THÊM ẢNH & NHẠC TỪ MÁY</h4>
             <p class="box-hint">
-              Chọn hàng loạt ảnh hoặc file nhạc MP3 từ máy tính để đưa ngay vào Dải Ngân Hà 3D & Tường Polaroid:
+              Chọn thêm ảnh hoặc bài hát MP3 từ máy tính để đưa vào không gian 3D:
             </p>
             <div class="upload-dropzones">
               <label class="dropzone-card" for="modal-photo-input">
-                <span class="dz-icon">🖼️</span>
-                <strong>Chọn thêm ảnh từ máy tính</strong>
-                <span>Hỗ trợ chọn 10, 20, 50+ ảnh (.jpg, .png, .webp) cùng lúc</span>
-                <input type="file" id="modal-photo-input" multiple accept="image/*" hidden />
+                <strong>＋ Chọn thêm ảnh / video vào bộ sưu tập</strong>
+                <span>Hỗ trợ chọn nhiều file (.jpg, .png, .mp4) cùng lúc</span>
+                <input type="file" id="modal-photo-input" multiple accept="image/*,video/*" hidden />
               </label>
 
               <label class="dropzone-card" for="modal-replace-photos-input">
-                <span class="dz-icon">🔄</span>
-                <strong>Thay thế toàn bộ ảnh demo bằng ảnh của bạn</strong>
-                <span>Xóa 24 ảnh mẫu và chỉ hiển thị bộ ảnh bạn chọn</span>
-                <input type="file" id="modal-replace-photos-input" multiple accept="image/*" hidden />
+                <strong>↺ Thay thế toàn bộ ảnh hiện tại</strong>
+                <span>Chỉ hiển thị những ảnh mới bạn chọn</span>
+                <input type="file" id="modal-replace-photos-input" multiple accept="image/*,video/*" hidden />
               </label>
 
               <label class="dropzone-card" for="modal-music-input">
-                <span class="dz-icon">🎵</span>
-                <strong>Chọn bài hát sinh nhật (.mp3 / .wav)</strong>
-                <span>Phát ngay lập tức trên máy đĩa than Vinyl</span>
+                <strong>♫ Đổi nhạc nền (.mp3 / .wav)</strong>
+                <span>Phát ngay lập tức trên trình phát đĩa than</span>
                 <input type="file" id="modal-music-input" accept="audio/*" hidden />
               </label>
             </div>
           </div>
 
-          <!-- Cột 2: Đổi tên người nhận, ngày sinh & lời chúc -->
           <div class="customizer-box">
-            <h4>✏️ 2. Đổi thông tin người nhận</h4>
+            <h4>2. THÔNG TIN TIÊU ĐỀ & LƯU VERCEL</h4>
             <form id="quick-info-form" class="custom-form">
               <label>
-                <span>Tên người thân (hiển thị lớn):</span>
-                <input type="text" id="input-recipient-name" placeholder="VD: Mẹ Yêu Quý / Bố Kính Yêu..." />
+                <span>Tiêu đề chính / Tên:</span>
+                <input type="text" id="input-recipient-name" placeholder="VD: HAPPY BIRTHDAY..." />
               </label>
               <label>
-                <span>Câu chúc phụ bên dưới tên:</span>
-                <input type="text" id="input-recipient-sub" placeholder="VD: Điểm tựa ấm áp nhất của gia đình..." />
+                <span>Dòng mô tả phụ:</span>
+                <input type="text" id="input-recipient-sub" placeholder="VD: Hành trình 44 khoảnh khắc đáng nhớ..." />
               </label>
               <label>
-                <span>Ngày sinh nhật:</span>
-                <input type="text" id="input-birthday-date" placeholder="VD: 23 • 10 • 2026" />
+                <span>Ngày kỷ niệm:</span>
+                <input type="text" id="input-birthday-date" placeholder="VD: 23 . 10 . 2026" />
               </label>
-              <button type="submit" class="btn-primary-gold full-width">💾 Lưu & Cập nhật giao diện</button>
+              <button type="submit" class="btn-primary-gold full-width">CẬP NHẬT GIAO DIỆN</button>
             </form>
 
             <div class="folder-guide-callout">
-              <h5>💾 Lưu Trực Tiếp Trên Web & Vercel:</h5>
+              <h5>LƯU & CHIA SẺ TRÊN VERCEL:</h5>
               <div style="display:flex; flex-direction:column; gap:8px; margin: 10px 0;">
                 <button type="button" class="btn-primary-gold full-width" id="btn-modal-copy-link">
-                  🔗 Lưu & Copy Link Chia Sẻ (Tải lại trang vẫn còn lưu)
+                  ⇪ LƯU & COPY LINK CHIA SẺ
                 </button>
               </div>
               <ul>
-                <li>Mọi nội dung bạn gõ trực tiếp lên hình ảnh, tiêu đề hay bức thư đều được <strong>tự động lưu tức thì</strong> vào trình duyệt và gắn mã lưu trữ lên thanh địa chỉ URL (<code>#s=...</code>).</li>
-                <li>Khi bấm <strong>F5 tải lại trang</strong> hoặc tắt đi mở lại, nội dung đã sửa vẫn giữ nguyên 100%.</li>
-                <li>Sau khi deploy lên <strong>Vercel</strong> và chỉnh sửa xong, bạn chỉ cần bấm <strong>Lưu & Copy Link</strong> rồi gửi đường link đó cho người thân là bất kỳ ai mở lên cũng thấy đúng bản bạn đã sửa!</li>
+                <li>Mọi nội dung bạn gõ trực tiếp lên hình ảnh, tiêu đề hay lời nhắn đều được tự động lưu vào trình duyệt và mã hóa lên URL (<code>#s=...</code>).</li>
+                <li>Tải lại trang (<code>F5</code>) giữ nguyên 100% nội dung đã sửa.</li>
               </ul>
             </div>
           </div>
@@ -584,39 +512,37 @@
     </div>
   </div>
 
-  <!-- Modal viết thêm lời chúc gia đình -->
+  <!-- Modal viết thêm lời chúc -->
   <div class="modal-overlay hidden" id="wish-modal" role="dialog" aria-modal="true">
     <div class="modal-card small-modal">
       <div class="modal-header">
-        <h3>✍️ Gửi Thêm Lời Chúc Sinh Nhật</h3>
+        <h3>THÊM LỜI CHÚC MỚI</h3>
         <button class="modal-close-btn" id="btn-close-wish-modal">✕</button>
       </div>
       <div class="modal-body">
         <form id="add-wish-form" class="custom-form">
           <label>
-            <span>Tên người chúc (VD: Con gái út, Anh Hai, Cả nhà...):</span>
-            <input type="text" id="wish-sender-input" required placeholder="Nhập tên của bạn..." />
+            <span>Tiêu đề / Người gửi:</span>
+            <input type="text" id="wish-sender-input" required placeholder="Nhập tên hoặc tiêu đề..." />
           </label>
           <label>
-            <span>Vai trò / Tiêu đề ngắn:</span>
-            <input type="text" id="wish-role-input" placeholder="VD: Gửi ngàn yêu thương" />
+            <span>Ký hiệu / Ghi chú ngắn:</span>
+            <input type="text" id="wish-role-input" placeholder="VD: 04" />
           </label>
           <label>
             <span>Nội dung lời chúc:</span>
-            <textarea id="wish-message-input" rows="4" required placeholder="Nhập lời chúc ấm áp dành tặng người thân..."></textarea>
+            <textarea id="wish-message-input" rows="4" required placeholder="Nhập nội dung lời chúc..."></textarea>
           </label>
-          <button type="submit" class="btn-primary-gold full-width">🌟 Đăng lời chúc lên tường</button>
+          <button type="submit" class="btn-primary-gold full-width">LƯU LỜI CHÚC</button>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- Thông báo tự động lưu khi sửa trực tiếp trên ảnh -->
   <div class="autosave-toast hidden" id="autosave-toast" aria-live="polite">
-    💾 Đã lưu nội dung bức hình!
+    ĐÃ LƯU NỘI DUNG
   </div>
 
-  <!-- Nạp file cấu hình trước, sau đó nạp logic chính -->
   <script src="config.js"></script>
   <script src="script.js"></script>
 </body>

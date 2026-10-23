@@ -112,8 +112,8 @@
   }
 
   // Nạp & Lưu dữ liệu đa tầng (Hỗ trợ LocalStorage + URL Hash Nén cho Vercel + Cloud API /api/storage + Xuất file config.js)
-  const STORAGE_KEY = "BIRTHDAY_GALAXY_PHOTOS_V1";
-  const FULL_STATE_KEY = "BIRTHDAY_GALAXY_FULL_STATE_V2";
+  const STORAGE_KEY = "BIRTHDAY_GALAXY_PHOTOS_V3";
+  const FULL_STATE_KEY = "BIRTHDAY_GALAXY_FULL_STATE_V3";
   let saveToastTimer = null;
   let saveApiTimer = null;
 
@@ -538,7 +538,7 @@
       const candle = document.createElement("div");
       candle.className = "candle-item";
       candle.dataset.index = String(idx);
-      candle.title = `Chạm để thổi nến #${idx + 1}: ${wishText}`;
+      candle.title = `Cột sáng #0${idx + 1}: ${wishText}`;
       candle.innerHTML = `
         <div class="candle-flame-wrap">
           <div class="candle-flame"></div>
@@ -550,6 +550,12 @@
       candle.addEventListener("click", (e) => {
         e.stopPropagation();
         extinguishSingleCandle(idx, true);
+      });
+      // Hỗ trợ vuốt ngón tay ngang qua các cột sáng trên Mobile
+      candle.addEventListener("pointerenter", (e) => {
+        if (e.buttons === 1 || e.pointerType === "touch") {
+          extinguishSingleCandle(idx, true);
+        }
       });
       row.appendChild(candle);
     });
@@ -566,10 +572,10 @@
     candle.classList.add("extinguished");
     state.litCandles = Math.max(0, state.litCandles - 1);
 
-    const wish = candleWishes[idx] || "Chúc tuổi mới bình an & hạnh phúc!";
+    const wish = candleWishes[idx] || "Sức khỏe & Bình an";
     const toast = document.getElementById("wish-toast");
     if (toast) {
-      toast.textContent = `✨ Điều ước #${idx + 1}: "${wish}" ✨`;
+      toast.textContent = `0${idx + 1} // ${wish.toUpperCase()}`;
     }
 
     playMagicChime(440 + idx * 65);
@@ -585,7 +591,6 @@
   }
 
   function blowAllCandlesSequence() {
-    // Bắt đầu phát nhạc ngay khi người dùng tương tác
     if (!state.isPlaying) {
       playCurrentTrack();
     }
@@ -595,7 +600,6 @@
     const unlit = Array.from(row.querySelectorAll(".candle-item:not(.extinguished)"));
 
     if (unlit.length === 0) {
-      // Nếu đã tắt hết rồi thì chuyển thẳng sang Ngân Hà 3D
       switchStage("stage-galaxy");
       launchCelebrationSalvo();
       return;
@@ -605,7 +609,7 @@
       const idx = Number(el.dataset.index);
       setTimeout(() => {
         extinguishSingleCandle(idx, false);
-      }, i * 160);
+      }, i * 130);
     });
   }
 
@@ -613,29 +617,27 @@
     stopMicBlowDetection();
     const toast = document.getElementById("wish-toast");
     if (toast) {
-      toast.innerHTML = "🎉 <strong>Chúc mừng Sinh Nhật!</strong> Đang mở Vũ Trụ Kỷ Niệm 3D... 🌌";
+      toast.innerHTML = "✦ ĐANG MỞ KHÔNG GIAN LƯU TRỮ 3D...";
     }
 
     const relightBtn = document.getElementById("btn-relight-candles");
     if (relightBtn) relightBtn.classList.remove("hidden");
 
     const blowText = document.getElementById("btn-blow-text");
-    if (blowText) blowText.textContent = "Khám Phá Vũ Trụ Kỷ Niệm 3D Ngay";
+    if (blowText) blowText.textContent = "BƯỚC VÀO KHÔNG GIAN 3D";
 
-    // Bắn pháo hoa lớn & tăng tốc hiệu ứng sao (Warp speed)
     launchCelebrationSalvo();
-    state.warpSpeed = 12;
+    state.warpSpeed = 16;
     setTimeout(() => {
       state.warpSpeed = 1;
-    }, 1800);
+    }, 1600);
 
-    // Tự động mở sang Vũ Trụ Kỷ Niệm 3D sau 1.5 giây để tạo cảm giác WOW
     if (!state.hasTransitionedToGalaxy) {
       state.hasTransitionedToGalaxy = true;
       setTimeout(() => {
         switchStage("stage-galaxy");
         launchCelebrationSalvo();
-      }, 1500);
+      }, 1250);
     }
   }
 
@@ -646,8 +648,8 @@
     state.litCandles = state.totalCandles;
     state.hasTransitionedToGalaxy = false;
     updateCandlesStatusUI();
-    setText("wish-toast", "🕯️ Nến đã được thắp sáng lại! Hãy ước nguyện và thổi tắt nến nhé!");
-    setText("btn-blow-text", "Thổi Nến & Mở Vũ Trụ Kỷ Niệm 3D");
+    setText("wish-toast", "CHẠM VÀO CÁC CỘT SÁNG HOẶC KÍCH HOẠT CỔNG KHÔNG GIAN 3D");
+    setText("btn-blow-text", "KHÁM PHÁ KHÔNG GIAN 3D");
     const relightBtn = document.getElementById("btn-relight-candles");
     if (relightBtn) relightBtn.classList.add("hidden");
   }
@@ -656,7 +658,7 @@
     setText("lit-candles-count", `${state.litCandles} / ${state.totalCandles}`);
   }
 
-  // Cảm biến thổi nến qua Microphone
+  // Cảm biến âm thanh qua Microphone
   async function toggleMicBlowDetection() {
     if (state.micActive) {
       stopMicBlowDetection();
@@ -672,7 +674,7 @@
       const micLabel = document.getElementById("mic-btn-label");
       const meterBox = document.getElementById("mic-meter-box");
       if (micBtn) micBtn.classList.add("listening");
-      if (micLabel) micLabel.textContent = "Đang nghe hơi thổi... (Dừng)";
+      if (micLabel) micLabel.textContent = "Đang nghe... (Dừng)";
       if (meterBox) meterBox.classList.remove("hidden");
 
       const ctx = getAudioContext();
@@ -687,7 +689,6 @@
       function checkBreath() {
         if (!state.micActive) return;
         analyser.getByteFrequencyData(data);
-        // Hơi thổi vào mic tập trung mạnh ở dải tần thấp - trung
         let sum = 0;
         for (let i = 0; i < 36; i++) sum += data[i];
         const avg = sum / 36;
@@ -699,10 +700,10 @@
         if (txt) txt.textContent = `${pct}%`;
 
         const flames = document.querySelectorAll(".candle-flame");
-        if (pct > 45) {
+        if (pct > 42) {
           flames.forEach((f) => f.classList.add("blowing"));
           blowFrames++;
-          if (blowFrames > 8) {
+          if (blowFrames > 7) {
             blowAllCandlesSequence();
             blowFrames = 0;
           }
@@ -717,7 +718,7 @@
     } catch (err) {
       const toast = document.getElementById("wish-toast");
       if (toast) {
-        toast.textContent = "💡 Trình duyệt chưa cấp quyền Micro — Bạn hãy nhấn nút 'Thổi Nến' màu vàng bên cạnh nhé!";
+        toast.textContent = "NHẤN NÚT 'KHÁM PHÁ KHÔNG GIAN 3D' BÊN DƯỚI ĐỂ BẮT ĐẦU";
       }
     }
   }
@@ -733,7 +734,7 @@
     const micLabel = document.getElementById("mic-btn-label");
     const meterBox = document.getElementById("mic-meter-box");
     if (micBtn) micBtn.classList.remove("listening");
-    if (micLabel) micLabel.textContent = "Thổi bằng Micro";
+    if (micLabel) micLabel.textContent = "Cảm biến âm thanh";
     if (meterBox) meterBox.classList.add("hidden");
   }
 
@@ -743,7 +744,8 @@
   }
 
   // ==========================================================================
-  // 5. CẢNH 2: VŨ TRỤ KỶ NIỆM 3D XOAY 360° (HELIX / RING / SPHERE)
+  // 5. CẢNH 2: KHÔNG GIAN 3D ĐA CHIỀU (VORTEX / TIME TUNNEL / ORBIT / SPHERE)
+  //    Tối ưu hóa tỷ lệ khung hình dọc Mobile & cảm ứng đa điểm (Pinch & Inertia)
   // ==========================================================================
   function renderGalaxyCards() {
     const holder = document.getElementById("galaxy-cards-holder");
@@ -759,13 +761,14 @@
       const mediaHtml = isVid
         ? `<video src="${photo.src}" ${rotStyle} autoplay loop muted playsinline preload="metadata"></video>`
         : `<img src="${photo.src}" ${rotStyle} alt="${escapeHtml(photo.title)}" loading="lazy" />`;
-      const badgeLabel = isVid ? `🎬 #${idx + 1}` : `#${idx + 1}`;
+      const numStr = String(idx + 1).padStart(2, "0");
+      const badgeLabel = isVid ? `▶ ${numStr}` : numStr;
       const overlayHtml = photo.overlayText
-        ? `<div class="photo-onscreen-caption" style="pointer-events:none;font-size:0.65rem;padding:3px 6px;bottom:28px;">${escapeHtml(photo.overlayText)}</div>`
+        ? `<div class="photo-onscreen-caption" style="pointer-events:none;font-size:0.62rem;padding:2px 6px;bottom:24px;">${escapeHtml(photo.overlayText)}</div>`
         : "";
 
       card.innerHTML = `
-        <span class="galaxy-card-badge" title="Nhấp vào thẻ để sửa trực tiếp">${badgeLabel} ✏️</span>
+        <span class="galaxy-card-badge">${badgeLabel}</span>
         ${mediaHtml}
         ${overlayHtml}
         <div class="galaxy-card-caption">${escapeHtml(photo.title)}</div>
@@ -793,30 +796,44 @@
     const count = cards.length;
     if (count === 0) return;
 
+    const isMobile = window.innerWidth <= 768;
+    const coreEl = document.getElementById("galaxy-core");
+    if (coreEl) {
+      coreEl.style.opacity = mode === "tunnel" ? "0.15" : "1";
+    }
+
     cards.forEach((card, i) => {
       let transformStr = "";
 
       if (mode === "helix") {
-        // Dải ngân hà xoắn ốc đa tầng (3 tầng cho 44 ảnh để khoảng cách thoáng đẹp)
-        const rings = count > 28 ? 3 : 2;
+        // Trên Mobile: Xoắn ốc dọc 4 tầng ôm vừa màn hình dọc điện thoại
+        const rings = isMobile ? 4 : 3;
         const ringIdx = i % rings;
         const itemsInRing = Math.ceil(count / rings);
         const posInRing = Math.floor(i / rings);
         const angle = (posInRing / itemsInRing) * 360 + ringIdx * (180 / itemsInRing);
-        const radius = 510 + ringIdx * 150;
-        const yOffset = (ringIdx - (rings - 1) / 2) * 215 + Math.sin(i * 0.85) * 24;
-        const tiltX = ringIdx === 0 ? 4 : ringIdx === 2 ? -4 : 0;
-        transformStr = `rotateY(${angle.toFixed(2)}deg) translateZ(${radius}px) translateY(${yOffset.toFixed(1)}px) rotateX(${tiltX}deg)`;
+        const radius = isMobile ? 280 + ringIdx * 75 : 490 + ringIdx * 145;
+        const vSpread = isMobile ? 155 : 210;
+        const yOffset = (ringIdx - (rings - 1) / 2) * vSpread + Math.sin(i * 0.9) * 18;
+        transformStr = `rotateY(${angle.toFixed(2)}deg) translateZ(${radius}px) translateY(${yOffset.toFixed(1)}px)`;
+      } else if (mode === "tunnel") {
+        // ĐƯỜNG HẦM THỜI GIAN 3D (Time Tunnel): Bay dọc trục Z xuyên qua 44 bức ảnh
+        const lane = i % 6;
+        const angleRad = (lane / 6) * Math.PI * 2 + i * 0.35;
+        const tunnelRadius = isMobile ? 165 : 290;
+        const x = Math.cos(angleRad) * tunnelRadius;
+        const y = Math.sin(angleRad) * tunnelRadius;
+        const z = 500 - i * 155;
+        transformStr = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px)`;
       } else if (mode === "ring") {
-        // Vòng xoay 360° cổ điển
         const angle = (i / count) * 360;
-        const radius = Math.max(520, Math.round((count * 172) / (2 * Math.PI)));
+        const cardSpacing = isMobile ? 132 : 170;
+        const radius = Math.max(isMobile ? 340 : 520, Math.round((count * cardSpacing) / (2 * Math.PI)));
         transformStr = `rotateY(${angle.toFixed(2)}deg) translateZ(${radius}px)`;
       } else if (mode === "sphere") {
-        // Quả cầu ký ức Fibonacci 3D
         const phi = Math.acos(1 - (2 * (i + 0.5)) / count);
         const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
-        const radius = count > 30 ? 580 : 470;
+        const radius = isMobile ? 340 : 560;
         const rotYDeg = ((theta * 180) / Math.PI) % 360;
         const rotXDeg = 90 - (phi * 180) / Math.PI;
         transformStr = `rotateY(${rotYDeg.toFixed(2)}deg) rotateX(${rotXDeg.toFixed(2)}deg) translateZ(${radius}px)`;
@@ -831,38 +848,79 @@
     const scene = document.getElementById("galaxy-scene");
     if (!viewport || !scene) return;
 
-    function updateSceneTransform() {
-      scene.style.transform = `translateZ(${state.zoomZ}px) rotateX(${state.rotX.toFixed(2)}deg) rotateY(${state.rotY.toFixed(2)}deg)`;
+    // Đặt khoảng cách camera mặc định tối ưu cho màn hình dọc Mobile
+    if (window.innerWidth <= 768) {
+      state.zoomZ = -290;
     }
 
-    // Vòng lặp xoay tự động mượt mà
+    let velX = 0;
+    let velY = 0;
+    let tunnelOffsetZ = 0;
+    let pinchStartDist = 0;
+    let pinchStartZoom = state.zoomZ;
+
+    function updateSceneTransform() {
+      if (state.galaxyMode === "tunnel") {
+        scene.style.transform = `translateZ(${(state.zoomZ + tunnelOffsetZ).toFixed(1)}px) rotateX(${(state.rotX * 0.25).toFixed(2)}deg) rotateZ(${(state.rotY * 0.08).toFixed(2)}deg)`;
+      } else {
+        scene.style.transform = `translateZ(${state.zoomZ.toFixed(1)}px) rotateX(${state.rotX.toFixed(2)}deg) rotateY(${state.rotY.toFixed(2)}deg)`;
+      }
+    }
+
+    // Vòng lặp 60fps có quán tính (Inertia) mượt như iOS
     function animateGalaxy() {
-      if (state.currentStage === "stage-galaxy" && state.autoRotate && !state.isDragging) {
-        state.rotY += 0.16;
-        updateSceneTransform();
+      if (state.currentStage === "stage-galaxy") {
+        if (!state.isDragging) {
+          if (Math.abs(velX) > 0.01 || Math.abs(velY) > 0.01) {
+            state.rotY += velX;
+            state.rotX = Math.max(-52, Math.min(52, state.rotX + velY));
+            velX *= 0.93;
+            velY *= 0.93;
+            updateSceneTransform();
+          } else if (state.autoRotate) {
+            if (state.galaxyMode === "tunnel") {
+              tunnelOffsetZ += 2.2;
+              if (tunnelOffsetZ > 44 * 155) tunnelOffsetZ = -400;
+            } else {
+              state.rotY += 0.18;
+            }
+            updateSceneTransform();
+          }
+        }
       }
       requestAnimationFrame(animateGalaxy);
     }
     requestAnimationFrame(animateGalaxy);
 
-    // Kéo chuột xoay 360°
+    // Kéo 1 ngón tay / chuột để xoay & bay trong không gian 3D
     viewport.addEventListener("pointerdown", (e) => {
       if (e.target.closest(".galaxy-bottom-hud") || e.target.closest(".galaxy-top-bar")) return;
       state.isDragging = true;
       state.dragMoved = false;
       state.dragStartX = e.clientX;
       state.dragStartY = e.clientY;
+      velX = 0;
+      velY = 0;
     });
 
     window.addEventListener("pointermove", (e) => {
       if (!state.isDragging) return;
       const dx = e.clientX - state.dragStartX;
       const dy = e.clientY - state.dragStartY;
-      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
         state.dragMoved = true;
       }
-      state.rotY += dx * 0.32;
-      state.rotX = Math.max(-48, Math.min(48, state.rotX - dy * 0.25));
+
+      if (state.galaxyMode === "tunnel") {
+        tunnelOffsetZ += dy * 2.5;
+        state.rotY += dx * 0.15;
+      } else {
+        velX = dx * 0.34;
+        velY = -dy * 0.24;
+        state.rotY += velX;
+        state.rotX = Math.max(-52, Math.min(52, state.rotX + velY));
+      }
+
       state.dragStartX = e.clientX;
       state.dragStartY = e.clientY;
       updateSceneTransform();
@@ -872,12 +930,46 @@
       state.isDragging = false;
     });
 
-    // Cuộn chuột thu phóng
+    // Hỗ trợ chụm 2 ngón tay (Pinch-to-Zoom) trên màn hình cảm ứng Mobile
+    viewport.addEventListener(
+      "touchstart",
+      (e) => {
+        if (e.touches.length === 2) {
+          state.isDragging = false;
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          pinchStartDist = Math.hypot(dx, dy);
+          pinchStartZoom = state.zoomZ;
+        }
+      },
+      { passive: true }
+    );
+
+    viewport.addEventListener(
+      "touchmove",
+      (e) => {
+        if (e.touches.length === 2 && pinchStartDist > 0) {
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          const dist = Math.hypot(dx, dy);
+          const delta = (dist - pinchStartDist) * 1.8;
+          state.zoomZ = Math.max(-950, Math.min(420, pinchStartZoom + delta));
+          updateSceneTransform();
+        }
+      },
+      { passive: true }
+    );
+
+    // Cuộn chuột thu phóng hoặc bay dọc đường hầm
     viewport.addEventListener(
       "wheel",
       (e) => {
         e.preventDefault();
-        state.zoomZ = Math.max(-850, Math.min(360, state.zoomZ - e.deltaY * 0.6));
+        if (state.galaxyMode === "tunnel") {
+          tunnelOffsetZ = Math.max(-600, Math.min(44 * 155, tunnelOffsetZ + e.deltaY * 1.1));
+        } else {
+          state.zoomZ = Math.max(-950, Math.min(420, state.zoomZ - e.deltaY * 0.6));
+        }
         updateSceneTransform();
       },
       { passive: false }
@@ -886,7 +978,10 @@
     // Các nút chuyển chế độ 3D
     document.querySelectorAll(".mode-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
+        tunnelOffsetZ = 0;
+        state.rotX = btn.dataset.mode === "tunnel" ? 0 : -8;
         applyGalaxyLayout(btn.dataset.mode);
+        updateSceneTransform();
         playMagicChime(587.33);
       });
     });
@@ -897,15 +992,16 @@
       btnAuto.addEventListener("click", () => {
         state.autoRotate = !state.autoRotate;
         btnAuto.innerHTML = state.autoRotate
-          ? `<span>⏸️</span> <span id="autorotate-label">Đang xoay tự động</span>`
-          : `<span>▶️</span> <span id="autorotate-label">Đã tạm dừng xoay</span>`;
+          ? `<span id="autorotate-label">⏸ TẠM DỪNG XOAY</span>`
+          : `<span id="autorotate-label">▶ TỰ ĐỘNG XOAY</span>`;
       });
     }
 
     const btnZoomIn = document.getElementById("btn-zoom-in");
     if (btnZoomIn) {
       btnZoomIn.addEventListener("click", () => {
-        state.zoomZ = Math.min(360, state.zoomZ + 110);
+        if (state.galaxyMode === "tunnel") tunnelOffsetZ += 260;
+        else state.zoomZ = Math.min(420, state.zoomZ + 120);
         updateSceneTransform();
       });
     }
@@ -913,7 +1009,8 @@
     const btnZoomOut = document.getElementById("btn-zoom-out");
     if (btnZoomOut) {
       btnZoomOut.addEventListener("click", () => {
-        state.zoomZ = Math.max(-850, state.zoomZ - 110);
+        if (state.galaxyMode === "tunnel") tunnelOffsetZ -= 260;
+        else state.zoomZ = Math.max(-950, state.zoomZ - 120);
         updateSceneTransform();
       });
     }
@@ -924,7 +1021,7 @@
         const randIdx = Math.floor(Math.random() * allPhotos.length);
         state.rotY = -(randIdx / allPhotos.length) * 360;
         updateSceneTransform();
-        setTimeout(() => openLightbox(randIdx), 450);
+        setTimeout(() => openLightbox(randIdx), 380);
       });
     }
 
@@ -967,8 +1064,8 @@
                 title="Nhấp để sửa ngày chụp trực tiếp"
               >${escapeHtml(photo.date || "Kỷ niệm")}</span>
 
-              <button class="polaroid-zoom-btn" type="button" title="Phóng to ảnh">🔍</button>
-              <button class="polaroid-rotate-btn" type="button" title="Xoay ảnh 90°">🔄</button>
+              <button class="polaroid-zoom-btn" type="button" title="Phóng to ảnh">⤢</button>
+              <button class="polaroid-rotate-btn" type="button" title="Xoay ảnh 90°">↻</button>
 
               ${mediaHtml}
 
@@ -976,7 +1073,7 @@
                 class="photo-onscreen-caption"
                 contenteditable="true"
                 spellcheck="false"
-                data-placeholder="✍️ Nhấp để viết chữ lên hình..."
+                data-placeholder="+ Gõ chữ lên hình..."
                 title="Nhấp để viết chữ nổi trực tiếp lên bức hình"
               >${escapeHtml(photo.overlayText || "")}</div>
             </div>
@@ -987,11 +1084,11 @@
                 spellcheck="false"
                 title="Nhấp để sửa tiêu đề bức hình"
               >${escapeHtml(photo.title)}</span>
-              <button class="btn-flip-card" type="button">🔄 Lật lời nhắn</button>
+              <button class="btn-flip-card" type="button">⇄ Lật</button>
             </div>
           </div>
           <div class="polaroid-back">
-            <div class="polaroid-back-ornament">❦ ✦ ❦</div>
+            <div class="polaroid-back-ornament">${String(idx + 1).padStart(2, "0")} // ARCHIVE</div>
             <div>
               <h4
                 class="polaroid-back-title polaroid-editable"
@@ -1007,8 +1104,8 @@
               >${escapeHtml(photo.note || "")}</p>
             </div>
             <div class="polaroid-back-actions">
-              <button class="btn-flip-card" type="button">↩️ Quay lại ảnh</button>
-              <button class="btn-flip-card btn-zoom-back" type="button" data-idx="${idx}">🔍 Phóng to</button>
+              <button class="btn-flip-card" type="button">↩ Ảnh</button>
+              <button class="btn-flip-card btn-zoom-back" type="button" data-idx="${idx}">⤢ Xem lớn</button>
             </div>
           </div>
         </div>
@@ -1128,8 +1225,8 @@
         const enabled = document.body.classList.toggle("direct-edit-enabled");
         toggleEditBtn.classList.toggle("active-edit-pill", enabled);
         toggleEditBtn.textContent = enabled
-          ? "✏️ Đang bật sửa trực tiếp trên ảnh"
-          : "👁️ Chế độ xem (Bấm để bật sửa)";
+          ? "✎ Sửa trực tiếp: BẬT"
+          : "👁 Chế độ xem";
       });
     }
 
@@ -1137,13 +1234,13 @@
     if (clearSampleBtn) {
       clearSampleBtn.addEventListener("click", () => {
         allPhotos.forEach((p, i) => {
-          p.title = `Kỷ niệm #${i + 1}`;
-          p.note = "Nhấp vào đây để viết câu chuyện của bức hình...";
+          p.title = `Khoảnh khắc #${String(i + 1).padStart(2, "0")}`;
+          p.note = "Chạm để viết ghi chú cho bức hình này...";
           p.overlayText = "";
         });
         renderGalaxyCards();
         renderPolaroidAlbum(getActiveAlbumFilter());
-        persistPhotoEdits("🧹 Đã xóa chữ mẫu! Bạn có thể nhấp vào từng hình để gõ nội dung mới.");
+        persistPhotoEdits("✓ Đã đặt lại chữ mẫu trên tất cả ảnh");
       });
     }
 
@@ -1271,8 +1368,24 @@
     const nextBtn = document.getElementById("btn-next-track");
     const volSlider = document.getElementById("volume-slider");
     const collapseBtn = document.getElementById("btn-toggle-vinyl-panel");
+    const turntableEl = playerEl ? playerEl.querySelector(".vinyl-turntable") : null;
+
+    // Tự động thu gọn Vinyl Player trên Mobile để không che vùng 3D
+    if (playerEl && window.innerWidth <= 768) {
+      playerEl.classList.add("collapsed");
+    }
 
     loadTrack(0, false);
+
+    if (turntableEl) {
+      turntableEl.addEventListener("click", () => {
+        if (state.isPlaying) {
+          pauseCurrentTrack();
+        } else {
+          playCurrentTrack();
+        }
+      });
+    }
 
     if (playBtn) {
       playBtn.addEventListener("click", () => {
@@ -1558,6 +1671,41 @@
         updateLightboxContent();
       }
     });
+
+    // Hỗ trợ vuốt trái / phải (Touch Swipe) trên Mobile trong khung ảnh Lightbox
+    const lbFrame = document.querySelector(".lightbox-img-frame");
+    if (lbFrame) {
+      let touchStartX = 0;
+      let touchStartY = 0;
+      lbFrame.addEventListener(
+        "touchstart",
+        (e) => {
+          if (e.touches.length === 1) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+          }
+        },
+        { passive: true }
+      );
+      lbFrame.addEventListener(
+        "touchend",
+        (e) => {
+          if (e.changedTouches.length === 1) {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            const dy = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+              if (dx < 0) {
+                state.lightboxIndex = (state.lightboxIndex + 1) % allPhotos.length;
+              } else {
+                state.lightboxIndex = (state.lightboxIndex - 1 + allPhotos.length) % allPhotos.length;
+              }
+              updateLightboxContent();
+            }
+          }
+        },
+        { passive: true }
+      );
+    }
   }
 
   // ==========================================================================
