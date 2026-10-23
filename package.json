@@ -1,0 +1,9 @@
+{
+  "name": "birthday-galaxy-3d",
+  "version": 1.0,
+  "private": true,
+  "description": "Website Chúc Mừng Sinh Nhật - Vũ Trụ Kỷ Niệm 3D (Hỗ trợ lưu trực tiếp trên Vercel)",
+  "scripts": {
+    "start": "python server.py"
+  }
+}
