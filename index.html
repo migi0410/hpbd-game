@@ -38,16 +38,20 @@
       </button>
       <button class="stage-tab" data-target="stage-galaxy">
         <span class="tab-idx">02</span>
-        <span class="tab-label">3D UNIVERSE</span>
+        <span class="tab-label">3D</span>
         <span class="photo-count-badge" id="galaxy-count-badge">44</span>
       </button>
-      <button class="stage-tab" data-target="stage-album">
+      <button class="stage-tab" data-target="stage-reels">
         <span class="tab-idx">03</span>
-        <span class="tab-label">EXHIBITION</span>
+        <span class="tab-label">STORIES</span>
+      </button>
+      <button class="stage-tab" data-target="stage-album">
+        <span class="tab-idx">04</span>
+        <span class="tab-label">GALLERY</span>
       </button>
       <button class="stage-tab" data-target="stage-letter">
-        <span class="tab-idx">04</span>
-        <span class="tab-label">MESSAGE</span>
+        <span class="tab-idx">05</span>
+        <span class="tab-label">LETTER</span>
       </button>
     </nav>
 
@@ -209,7 +213,98 @@
         <button class="hud-btn" id="btn-zoom-in">＋ TIẾN GẦN</button>
         <button class="hud-btn" id="btn-zoom-out">－ LÙI XA</button>
         <button class="hud-btn" id="btn-random-memory">✦ NGẪU NHIÊN</button>
-        <button class="hud-btn highlight" id="btn-start-slideshow">▶ CINEMA MODE</button>
+        <button class="hud-btn highlight" id="btn-start-slideshow">▶ STORY REELS</button>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         03. CHẾ ĐỘ STORY / REELS DỌC TOÀN MÀN HÌNH (KEN BURNS & TYPEWRITER)
+         ===================================================================== -->
+    <section id="stage-reels" class="stage-section">
+      <div class="reels-stage-wrapper" id="reels-stage-wrapper">
+        <div class="reels-player-card" id="reels-player-card">
+          <!-- Thanh tiến trình 44 vạch kiểu Instagram Story -->
+          <div class="reels-progress-track" id="reels-progress-track"></div>
+
+          <!-- Header thông tin trên cùng của Story -->
+          <div class="reels-top-hud">
+            <div class="reels-meta-left">
+              <span class="reels-index-badge" id="reels-counter">01 / 44</span>
+              <span
+                class="reels-date-pill editable-field"
+                id="reels-date"
+                contenteditable="true"
+                spellcheck="false"
+                title="Chạm để sửa ngày chụp"
+              >2023 — 2026</span>
+            </div>
+
+            <div class="reels-top-actions">
+              <button class="reels-icon-btn" id="btn-reels-autoplay" type="button" title="Tạm dừng / Tự động chuyển Story">
+                ⏸ Tự chạy
+              </button>
+              <button class="reels-icon-btn" id="btn-reels-rotate" type="button" title="Xoay ảnh 90°">
+                ↻
+              </button>
+              <button class="reels-icon-btn" id="btn-reels-expand" type="button" title="Mở chế độ chỉnh sửa chi tiết">
+                ⤢
+              </button>
+            </div>
+          </div>
+
+          <!-- Khung hình chính (Hỗ trợ vuốt dọc lên/xuống + hiệu ứng Ken Burns Zoom chậm) -->
+          <div class="reels-media-viewport" id="reels-media-viewport">
+            <div class="reels-slide-frame" id="reels-slide-frame">
+              <img id="reels-img" class="reels-media-el ken-burns-active" src="assets/images/ky-niem-01.jpg" alt="Story Memory" decoding="async" />
+              <video id="reels-video" class="reels-media-el hidden" playsinline loop></video>
+            </div>
+
+            <!-- Gợi ý vuốt dọc nhẹ nhàng -->
+            <div class="reels-swipe-hint" id="reels-swipe-hint">
+              <span>↕ VUỐT LÊN / XUỐNG ĐỂ CHUYỂN STORY</span>
+            </div>
+          </div>
+
+          <!-- Cột nút tương tác nhanh bên phải (Chuẩn Reels / TikTok) -->
+          <div class="reels-side-dock">
+            <button class="reels-dock-btn" id="btn-reels-prev" type="button" title="Ảnh trước (Vuốt xuống)">
+              <span>↑</span>
+            </button>
+            <button class="reels-dock-btn" id="btn-reels-next" type="button" title="Ảnh tiếp theo (Vuốt lên)">
+              <span>↓</span>
+            </button>
+            <button class="reels-dock-btn" id="btn-reels-spark" type="button" title="Bắn pháo sáng chúc mừng">
+              <span>✦</span>
+            </button>
+          </div>
+
+          <!-- Khối Chữ Chạy & Chỉnh Sửa Trực Tiếp Ở Đáy Màn Hình (Editorial Story Caption) -->
+          <div class="reels-bottom-overlay">
+            <div
+              class="reels-onscreen-tag editable-field"
+              id="reels-overlay-text"
+              contenteditable="true"
+              spellcheck="false"
+              data-placeholder="+ Chạm để thêm nhãn chữ nổi..."
+            ></div>
+
+            <h3
+              class="reels-story-title editable-field"
+              id="reels-title"
+              contenteditable="true"
+              spellcheck="false"
+              title="Chạm để sửa tiêu đề bức hình"
+            >Khoảnh khắc #01</h3>
+
+            <p
+              class="reels-story-note editable-field"
+              id="reels-note"
+              contenteditable="true"
+              spellcheck="false"
+              title="Chạm để sửa câu chuyện / lời dẫn của bức hình"
+            ></p>
+          </div>
+        </div>
       </div>
     </section>
 

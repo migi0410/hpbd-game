@@ -332,6 +332,7 @@
   function refreshAllViewsFromState() {
     initConfigContent();
     renderGalaxyCards();
+    openReelAt(state.reelIndex || 0);
     renderPolaroidAlbum(getActiveAlbumFilter());
     fillFullLetterText();
     renderFamilyWishes();
@@ -524,9 +525,13 @@
       btn.classList.toggle("active", btn.dataset.target === targetId);
     });
 
-    if (targetId === "stage-letter" && !state.envelopeOpened) {
-      // Nhắc nhẹ mở phong bì
+    if (targetId === "stage-reels") {
+      openReelAt(state.reelIndex || 0);
+      if (!state.isPlaying) playCurrentTrack();
+    } else {
+      pauseReelsVideoIfActive();
     }
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -1144,8 +1149,347 @@
     const btnSlideshow = document.getElementById("btn-start-slideshow");
     if (btnSlideshow) {
       btnSlideshow.addEventListener("click", () => {
-        openLightbox(0);
-        startSlideshow();
+        switchStage("stage-reels");
+      });
+    }
+  }
+
+  // ==========================================================================
+  // 5B. CẢNH STORY / REELS DỌC TOÀN MÀN HÌNH (KEN BURNS + TYPEWRITER + SWIPE)
+  // ==========================================================================
+  state.reelIndex = 0;
+  state.reelAutoPlay = true;
+  state.reelPausedByHold = false;
+  state.reelProgress = 0; // 0 -> 100
+  let reelNoteTimer = null;
+
+  function buildReelsProgressSegments() {
+    const track = document.getElementById("reels-progress-track");
+    if (!track) return;
+    track.innerHTML = allPhotos
+      .map(
+        (_, i) =>
+          `<div class="reels-prog-seg" data-idx="${i}"><div class="reels-prog-fill" id="reel-prog-fill-${i}"></div></div>`
+      )
+      .join("");
+  }
+
+  function pauseReelsVideoIfActive() {
+    const vid = document.getElementById("reels-video");
+    if (vid && !vid.paused) {
+      vid.pause();
+    }
+  }
+
+  function openReelAt(index, direction = "none") {
+    if (allPhotos.length === 0) return;
+    state.reelIndex = (index + allPhotos.length) % allPhotos.length;
+    state.reelProgress = 0;
+
+    const item = allPhotos[state.reelIndex];
+    const imgEl = document.getElementById("reels-img");
+    const vidEl = document.getElementById("reels-video");
+    const frameEl = document.getElementById("reels-slide-frame");
+    const isVid = isVideoItem(item);
+    const rotTransform = item.rotation ? `rotate(${item.rotation}deg)` : "";
+
+    // Hiệu ứng trượt dọc lên/xuống mượt khi vuốt
+    if (frameEl && direction !== "none") {
+      frameEl.classList.remove("slide-next-anim", "slide-prev-anim");
+      void frameEl.offsetWidth;
+      frameEl.classList.add(direction === "next" ? "slide-next-anim" : "slide-prev-anim");
+    }
+
+    if (isVid) {
+      if (imgEl) imgEl.classList.add("hidden");
+      if (vidEl) {
+        vidEl.classList.remove("hidden");
+        vidEl.poster = "assets/images/ky-niem-40-poster.jpg";
+        vidEl.src = item.src;
+        vidEl.style.transform = rotTransform;
+        vidEl.play().catch(() => {});
+      }
+    } else {
+      if (vidEl) {
+        vidEl.pause();
+        vidEl.classList.add("hidden");
+      }
+      if (imgEl) {
+        imgEl.classList.remove("hidden", "ken-burns-active");
+        imgEl.src = item.src;
+        imgEl.style.transform = rotTransform;
+        void imgEl.offsetWidth;
+        if (!item.rotation) {
+          imgEl.classList.add("ken-burns-active");
+        }
+      }
+    }
+
+    // Nạp trước (Preload) ảnh tiếp theo để vuốt không trễ 1ms nào
+    const nextItem = allPhotos[(state.reelIndex + 1) % allPhotos.length];
+    if (nextItem && !isVideoItem(nextItem)) {
+      const preloadImg = new Image();
+      preloadImg.src = nextItem.src;
+    }
+
+    setText("reels-counter", `${String(state.reelIndex + 1).padStart(2, "0")} / ${String(allPhotos.length).padStart(2, "0")}`);
+    setText("reels-date", item.date || "2023 — 2026");
+    setText("reels-title", item.title || `Khoảnh khắc #${String(state.reelIndex + 1).padStart(2, "0")}`);
+    setText("reels-overlay-text", item.overlayText || "");
+
+    startReelNoteTypewriter(item.note || "");
+    syncReelsSegmentsUI();
+  }
+
+  function startReelNoteTypewriter(fullText) {
+    if (reelNoteTimer) clearInterval(reelNoteTimer);
+    const noteEl = document.getElementById("reels-note");
+    if (!noteEl) return;
+    noteEl.textContent = "";
+    if (!fullText) return;
+
+    let charIdx = 0;
+    reelNoteTimer = setInterval(() => {
+      if (document.activeElement === noteEl) {
+        clearInterval(reelNoteTimer);
+        return;
+      }
+      charIdx += 2;
+      noteEl.textContent = fullText.slice(0, charIdx);
+      if (charIdx >= fullText.length) {
+        noteEl.textContent = fullText;
+        clearInterval(reelNoteTimer);
+      }
+    }, 22);
+  }
+
+  function syncReelsSegmentsUI() {
+    const segs = document.querySelectorAll(".reels-prog-seg");
+    segs.forEach((seg, i) => {
+      const fill = seg.querySelector(".reels-prog-fill");
+      if (i < state.reelIndex) {
+        seg.classList.add("done");
+        if (fill) fill.style.width = "100%";
+      } else if (i > state.reelIndex) {
+        seg.classList.remove("done");
+        if (fill) fill.style.width = "0%";
+      } else {
+        seg.classList.remove("done");
+        if (fill) fill.style.width = `${state.reelProgress.toFixed(1)}%`;
+      }
+    });
+  }
+
+  function stepReelSlide(delta) {
+    const hint = document.getElementById("reels-swipe-hint");
+    if (hint) hint.style.opacity = "0";
+    openReelAt(state.reelIndex + delta, delta > 0 ? "next" : "prev");
+  }
+
+  function initReelsStage() {
+    buildReelsProgressSegments();
+    openReelAt(0);
+
+    const viewport = document.getElementById("reels-media-viewport");
+    const playerCard = document.getElementById("reels-player-card");
+    const btnAuto = document.getElementById("btn-reels-autoplay");
+    const btnRotate = document.getElementById("btn-reels-rotate");
+    const btnExpand = document.getElementById("btn-reels-expand");
+    const btnPrev = document.getElementById("btn-reels-prev");
+    const btnNext = document.getElementById("btn-reels-next");
+    const btnSpark = document.getElementById("btn-reels-spark");
+
+    // Vòng lặp chạy thanh tiến trình Story (5.8 giây / ảnh)
+    let lastReelTick = performance.now();
+    function tickReelProgress(now) {
+      const dtMs = Math.min(100, now - lastReelTick);
+      lastReelTick = now;
+
+      const isEditingInReels =
+        document.activeElement &&
+        document.activeElement.closest &&
+        document.activeElement.closest("#reels-player-card");
+
+      if (
+        state.currentStage === "stage-reels" &&
+        state.reelAutoPlay &&
+        !state.reelPausedByHold &&
+        !isEditingInReels
+      ) {
+        const item = allPhotos[state.reelIndex];
+        const durationMs = isVideoItem(item) ? 11000 : 5800;
+        state.reelProgress += (dtMs / durationMs) * 100;
+
+        const activeFill = document.getElementById(`reel-prog-fill-${state.reelIndex}`);
+        if (activeFill) {
+          activeFill.style.width = `${Math.min(100, state.reelProgress).toFixed(1)}%`;
+        }
+
+        if (state.reelProgress >= 100) {
+          openReelAt(state.reelIndex + 1, "next");
+        }
+      }
+      requestAnimationFrame(tickReelProgress);
+    }
+    requestAnimationFrame(tickReelProgress);
+
+    if (btnAuto) {
+      btnAuto.addEventListener("click", () => {
+        state.reelAutoPlay = !state.reelAutoPlay;
+        btnAuto.textContent = state.reelAutoPlay ? "⏸ Tự chạy" : "▶ Đang dừng";
+        if (playerCard) playerCard.classList.toggle("paused", !state.reelAutoPlay);
+      });
+    }
+
+    if (btnRotate) {
+      btnRotate.addEventListener("click", () => {
+        rotatePhotoByIndex(state.reelIndex);
+        openReelAt(state.reelIndex);
+      });
+    }
+
+    if (btnExpand) {
+      btnExpand.addEventListener("click", () => {
+        openLightbox(state.reelIndex);
+      });
+    }
+
+    if (btnPrev) btnPrev.addEventListener("click", () => stepReelSlide(-1));
+    if (btnNext) btnNext.addEventListener("click", () => stepReelSlide(1));
+    if (btnSpark) {
+      btnSpark.addEventListener("click", () => {
+        spawnFireworkBurst(window.innerWidth * 0.5, window.innerHeight * 0.35);
+        playMagicChime(587.33);
+      });
+    }
+
+    // Hỗ trợ Vuốt Dọc Lên/Xuống (Reels) + Chạm Trái/Phải (Story) + Nhấn Giữ Tạm Dừng
+    if (viewport) {
+      let startX = 0;
+      let startY = 0;
+      let startTime = 0;
+
+      viewport.addEventListener(
+        "touchstart",
+        (e) => {
+          if (e.touches.length === 1) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            startTime = performance.now();
+            state.reelPausedByHold = true;
+            if (playerCard) playerCard.classList.add("paused");
+          }
+        },
+        { passive: true }
+      );
+
+      viewport.addEventListener(
+        "touchend",
+        (e) => {
+          state.reelPausedByHold = false;
+          if (playerCard && state.reelAutoPlay) playerCard.classList.remove("paused");
+
+          if (e.changedTouches.length === 1) {
+            const dx = e.changedTouches[0].clientX - startX;
+            const dy = e.changedTouches[0].clientY - startY;
+            const elapsed = performance.now() - startTime;
+
+            // Vuốt dọc lên / xuống (Chuẩn TikTok / Reels)
+            if (Math.abs(dy) > 42 && Math.abs(dy) > Math.abs(dx)) {
+              if (dy < 0) stepReelSlide(1);
+              else stepReelSlide(-1);
+              return;
+            }
+
+            // Vuốt ngang trái / phải
+            if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy)) {
+              if (dx < 0) stepReelSlide(1);
+              else stepReelSlide(-1);
+              return;
+            }
+
+            // Chạm nhanh cạnh trái / cạnh phải (Chuẩn Instagram Story)
+            if (Math.abs(dx) < 12 && Math.abs(dy) < 12 && elapsed < 260) {
+              const rect = viewport.getBoundingClientRect();
+              const tapX = e.changedTouches[0].clientX - rect.left;
+              if (tapX < rect.width * 0.32) {
+                stepReelSlide(-1);
+              } else if (tapX > rect.width * 0.68) {
+                stepReelSlide(1);
+              }
+            }
+          }
+        },
+        { passive: true }
+      );
+
+      // Hỗ trợ cuộn chuột trên máy tính
+      let wheelCooldown = false;
+      viewport.addEventListener(
+        "wheel",
+        (e) => {
+          e.preventDefault();
+          if (wheelCooldown) return;
+          if (Math.abs(e.deltaY) > 18) {
+            wheelCooldown = true;
+            stepReelSlide(e.deltaY > 0 ? 1 : -1);
+            setTimeout(() => {
+              wheelCooldown = false;
+            }, 420);
+          }
+        },
+        { passive: false }
+      );
+    }
+
+    // Chỉnh sửa trực tiếp Tiêu đề, Ngày chụp, Lời nhắn ngay trên màn hình Story Reels
+    const rDate = document.getElementById("reels-date");
+    const rTitle = document.getElementById("reels-title");
+    const rNote = document.getElementById("reels-note");
+    const rOverlay = document.getElementById("reels-overlay-text");
+
+    if (rDate) {
+      rDate.addEventListener("input", () => {
+        const item = allPhotos[state.reelIndex];
+        if (!item) return;
+        item.date = rDate.textContent.trim();
+        syncSingleCardUI(state.reelIndex);
+        persistPhotoEdits();
+      });
+    }
+
+    if (rTitle) {
+      rTitle.addEventListener("input", () => {
+        const item = allPhotos[state.reelIndex];
+        if (!item) return;
+        item.title = rTitle.textContent.trim();
+        syncSingleCardUI(state.reelIndex);
+        persistPhotoEdits();
+      });
+    }
+
+    if (rNote) {
+      rNote.addEventListener("focus", () => {
+        if (reelNoteTimer) clearInterval(reelNoteTimer);
+        const item = allPhotos[state.reelIndex];
+        if (item) rNote.textContent = item.note || "";
+      });
+      rNote.addEventListener("input", () => {
+        const item = allPhotos[state.reelIndex];
+        if (!item) return;
+        item.note = rNote.textContent.trim();
+        syncSingleCardUI(state.reelIndex);
+        persistPhotoEdits();
+      });
+    }
+
+    if (rOverlay) {
+      rOverlay.addEventListener("input", () => {
+        const item = allPhotos[state.reelIndex];
+        if (!item) return;
+        item.overlayText = rOverlay.textContent.trim();
+        syncSingleCardUI(state.reelIndex);
+        persistPhotoEdits();
       });
     }
   }
@@ -2113,8 +2457,13 @@
     }));
 
     function drawStars() {
-      // Trên Mobile: Tạm dừng vẽ sao nền khi đang cuộn xem lưới ảnh (stage-album) hoặc đọc thư để cuộn mượt 120Hz
-      if (isMobile && (state.currentStage === "stage-album" || state.currentStage === "stage-letter")) {
+      // Trên Mobile: Tạm dừng vẽ sao nền khi đang xem Story Reels, cuộn lưới ảnh hoặc đọc thư để mượt 120Hz
+      if (
+        isMobile &&
+        (state.currentStage === "stage-reels" ||
+          state.currentStage === "stage-album" ||
+          state.currentStage === "stage-letter")
+      ) {
         requestAnimationFrame(drawStars);
         return;
       }
@@ -2252,6 +2601,7 @@
     renderCandles();
     renderGalaxyCards();
     initGalaxyInteractions();
+    initReelsStage();
     renderPolaroidAlbum("all");
     initAlbumControls();
     initEnvelopeAndLetter();

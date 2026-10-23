@@ -2250,3 +2250,304 @@ body:not(.direct-edit-enabled) .photo-onscreen-caption:empty {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   CHẾ ĐỘ STORY / REELS DỌC TOÀN MÀN HÌNH (KEN BURNS & TYPEWRITER CAPTION)
+   ========================================================================== */
+#stage-reels {
+  position: relative;
+  height: calc(100dvh - 70px);
+  overflow: hidden;
+  touch-action: none;
+}
+
+.reels-stage-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px 16px;
+}
+
+.reels-player-card {
+  position: relative;
+  width: min(440px, 100%);
+  height: 100%;
+  max-height: 820px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #06060a;
+  border: 1px solid rgba(229, 207, 163, 0.32);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+/* Thanh tiến trình 44 vạch trên đỉnh Story */
+.reels-progress-track {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  z-index: 25;
+  display: flex;
+  gap: 3px;
+  height: 3px;
+}
+
+.reels-prog-seg {
+  flex: 1;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.reels-prog-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--gold-champagne);
+  border-radius: 99px;
+}
+
+.reels-prog-seg.done .reels-prog-fill {
+  width: 100%;
+}
+
+/* Header HUD trên cùng của Story */
+.reels-top-hud {
+  position: absolute;
+  top: 20px;
+  left: 12px;
+  right: 12px;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.reels-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reels-index-badge {
+  background: rgba(5, 5, 8, 0.78);
+  border: 1px solid rgba(229, 207, 163, 0.35);
+  color: var(--gold-champagne);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  padding: 4px 9px;
+  border-radius: 99px;
+}
+
+.reels-date-pill {
+  background: rgba(5, 5, 8, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  padding: 4px 10px;
+  border-radius: 99px;
+}
+
+.reels-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reels-icon-btn {
+  background: rgba(5, 5, 8, 0.75);
+  border: 1px solid rgba(229, 207, 163, 0.28);
+  color: var(--gold-champagne);
+  padding: 5px 10px;
+  border-radius: 99px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  cursor: pointer;
+}
+
+/* Khung hình & Hiệu ứng Ken Burns Điện Ảnh */
+.reels-media-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #040407;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reels-slide-frame {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.reels-slide-frame.slide-next-anim {
+  animation: reelSlideUp 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reels-slide-frame.slide-prev-anim {
+  animation: reelSlideDown 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes reelSlideUp {
+  0% { opacity: 0.35; transform: translateY(48px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes reelSlideDown {
+  0% { opacity: 0.35; transform: translateY(-48px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.reels-media-el {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform-origin: center center;
+}
+
+.reels-media-el.ken-burns-active {
+  animation: kenBurnsCinema 6.5s ease-out forwards;
+}
+
+.reels-player-card.paused .reels-media-el.ken-burns-active {
+  animation-play-state: paused;
+}
+
+@keyframes kenBurnsCinema {
+  0% { transform: scale(1) translate3d(0, 0, 0); }
+  100% { transform: scale(1.1) translate3d(-1.5%, -1.5%, 0); }
+}
+
+.reels-swipe-hint {
+  position: absolute;
+  top: 62px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 18;
+  background: rgba(5, 5, 8, 0.65);
+  border: 1px solid rgba(229, 207, 163, 0.22);
+  color: rgba(247, 244, 238, 0.72);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+/* Cột nút điều khiển dọc bên phải chuẩn Reels */
+.reels-side-dock {
+  position: absolute;
+  right: 12px;
+  bottom: 165px;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reels-dock-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(8, 8, 14, 0.82);
+  border: 1px solid rgba(229, 207, 163, 0.35);
+  color: var(--gold-champagne);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.reels-dock-btn:active {
+  transform: scale(0.92);
+  background: var(--gold-champagne);
+  color: #060609;
+}
+
+/* Khối Chữ Chạy & Chỉnh Sửa Trực Tiếp Ở Đáy Story */
+.reels-bottom-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 22;
+  padding: 48px 64px 22px 18px;
+  background: linear-gradient(
+    to top,
+    rgba(4, 4, 7, 0.96) 0%,
+    rgba(4, 4, 7, 0.82) 55%,
+    transparent 100%
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.reels-onscreen-tag {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--gold-champagne);
+  background: rgba(229, 207, 163, 0.12);
+  border: 1px dashed rgba(229, 207, 163, 0.4);
+  padding: 3px 9px;
+  border-radius: 6px;
+}
+
+.reels-onscreen-tag:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(229, 207, 163, 0.55);
+}
+
+.reels-story-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.45rem, 4.5vw, 1.85rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.15;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
+}
+
+.reels-story-note {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: rgba(247, 244, 238, 0.86);
+  max-height: 4.8em;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .reels-stage-wrapper {
+    padding: 0 6px calc(68px + var(--safe-bottom));
+  }
+
+  .reels-player-card {
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+  }
+
+  .reels-bottom-overlay {
+    padding: 38px 58px 16px 14px;
+  }
+}
