@@ -182,7 +182,7 @@
         </div>
 
         <div class="galaxy-hint">
-          <span>KÉO ĐỂ XOAY 360° • CUỘN CHUỘT ĐỂ BAY XUYÊN KHÔNG GIAN • CHẠM VÀO ẢNH ĐỂ MỞ & SỬA</span>
+          <span>KÉO ĐỂ XOAY 360° • CUỘN CHUỘT ĐỂ BAY XUYÊN KHÔNG GIAN • CHẠM VÀO ẢNH ĐỂ XEM CHI TIẾT</span>
         </div>
       </div>
 
@@ -245,7 +245,7 @@
     </section>
 
     <!-- =====================================================================
-         03. TRIỂN LÃM ẢNH & CHỈNH SỬA TRỰC TIẾP (EDITORIAL EXHIBITION)
+         03. TRIỂN LÃM ẢNH (EDITORIAL EXHIBITION)
          ===================================================================== -->
     <section id="stage-album" class="stage-section">
       <div class="section-container">
@@ -253,7 +253,7 @@
           <span class="section-eyebrow">ARCHIVE EXHIBITION // 44 FRAMES</span>
           <h2 class="section-title">Bộ Sưu Tập Khoảnh Khắc</h2>
           <p class="section-desc">
-            Nhấp trực tiếp vào bất kỳ dòng chữ nào trên ảnh để chỉnh sửa nội dung. Mọi thay đổi được tự động lưu tức thì.
+            Chạm vào từng bức ảnh để xem kích thước lớn hoặc nhấn nút Lật thẻ để đọc câu chuyện đằng sau mỗi kỷ niệm.
           </p>
 
           <div class="album-toolbar">
@@ -266,16 +266,7 @@
             </div>
 
             <div class="album-actions">
-              <button class="btn-outline-gold active-edit-pill" id="btn-toggle-edit-mode">
-                ✎ ĐANG BẬT SỬA TRỰC TIẾP
-              </button>
-              <button class="btn-outline-gold" id="btn-copy-share-link">
-                ⇪ LƯU & COPY LINK
-              </button>
-              <button class="btn-outline-gold" id="btn-clear-sample-text">
-                ⌫ ĐẶT LẠI CHỮ MẶC ĐỊNH
-              </button>
-              <button class="btn-outline-gold" id="btn-flip-all-polaroids">⇄ LẬT THẺ</button>
+              <button class="btn-outline-gold" id="btn-flip-all-polaroids">⇄ LẬT TẤT CẢ THẺ</button>
               <label class="btn-upload-inline" for="quick-photo-input">
                 <span>＋ THÊM ẢNH</span>
                 <input type="file" id="quick-photo-input" multiple accept="image/*,video/*" hidden />
@@ -402,7 +393,7 @@
   </aside>
 
   <!-- =====================================================================
-       CINEMA LIGHTBOX & TRÌNH CHỈNH SỬA TRỰC TIẾP TRÊN ẢNH
+       CINEMA LIGHTBOX XEM ẢNH KÍCH THƯỚC LỚN
        ===================================================================== -->
   <div class="lightbox-modal hidden" id="lightbox-modal" role="dialog" aria-modal="true">
     <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
@@ -414,49 +405,15 @@
         <div class="lightbox-img-frame">
           <img src="" alt="Kỷ niệm" id="lightbox-img" />
           <video src="" id="lightbox-video" class="hidden" controls playsinline loop></video>
-          <div
-            class="photo-onscreen-caption lightbox-onscreen-caption"
-            id="lightbox-overlay-text"
-            contenteditable="true"
-            spellcheck="false"
-            data-placeholder="✎ Nhấp vào đây để viết chữ trực tiếp lên mặt bức hình..."
-          ></div>
           <button class="btn-rotate-photo" id="btn-lightbox-rotate" title="Xoay bức hình 90°">↻ Xoay 90°</button>
         </div>
         <div class="lightbox-caption-panel">
-          <div class="edit-hint-banner">
-            <strong>CHẾ ĐỘ SỬA TRỰC TIẾP:</strong> Nhấp vào bất kỳ dòng chữ nào bên dưới hoặc trên mặt ảnh để chỉnh sửa. Tự động lưu tức thì.
-          </div>
           <div class="lightbox-meta-row">
             <span class="lightbox-index" id="lightbox-index">01 / 44</span>
-            <span
-              class="lightbox-date editable-field"
-              id="lightbox-date"
-              contenteditable="true"
-              spellcheck="false"
-            >2025</span>
+            <span class="lightbox-date" id="lightbox-date">2025</span>
           </div>
-          <h3
-            class="lightbox-title editable-field"
-            id="lightbox-title"
-            contenteditable="true"
-            spellcheck="false"
-          >Khoảnh khắc #01</h3>
-          <p
-            class="lightbox-note editable-field"
-            id="lightbox-note"
-            contenteditable="true"
-            spellcheck="false"
-          ></p>
-          <div class="lightbox-category-row">
-            <label for="lightbox-category-select">Phân loại:</label>
-            <select id="lightbox-category-select" class="category-select">
-              <option value="sum-vay">Gặp gỡ</option>
-              <option value="du-lich">Hành trình</option>
-              <option value="ky-niem">Kỷ niệm</option>
-              <option value="nu-cuoi">Khoảnh khắc</option>
-            </select>
-          </div>
+          <h3 class="lightbox-title" id="lightbox-title">Khoảnh khắc #01</h3>
+          <p class="lightbox-note" id="lightbox-note"></p>
           <div class="lightbox-actions-bar">
             <button class="btn-slideshow-toggle" id="btn-lightbox-slideshow">
               ▶ TRÌNH CHIẾU TỰ ĐỘNG (SLIDESHOW)
