@@ -9,8 +9,8 @@
  */
 
 const KV_APP_KEY = "1ksr18he";
-const KV_PTR_KEY = "hpbd_ptr_v3";
-const NTFY_TOPIC = "hpbd_galaxy_3d_migi0410_v3";
+const KV_PTR_KEY = "hpbd_ptr_v4";
+const NTFY_TOPIC = "hpbd_galaxy_3d_migi0410_v4";
 
 async function saveToBuiltInCloudDb(stateObj) {
   // 1. Lưu toàn bộ JSON state lên Bytebin Cloud Store

@@ -112,8 +112,8 @@
   }
 
   // Nạp & Lưu dữ liệu đa tầng (Hỗ trợ LocalStorage + URL Hash Nén cho Vercel + Cloud API /api/storage + Xuất file config.js)
-  const STORAGE_KEY = "BIRTHDAY_GALAXY_PHOTOS_V3";
-  const FULL_STATE_KEY = "BIRTHDAY_GALAXY_FULL_STATE_V3";
+  const STORAGE_KEY = "BIRTHDAY_GALAXY_PHOTOS_V4";
+  const FULL_STATE_KEY = "BIRTHDAY_GALAXY_FULL_STATE_V4";
   let saveToastTimer = null;
   let saveApiTimer = null;
 
@@ -277,8 +277,8 @@
   }
 
   const KV_APP_KEY = "1ksr18he";
-  const KV_PTR_KEY = "hpbd_ptr_v3";
-  const NTFY_TOPIC = "hpbd_galaxy_3d_migi0410_v3";
+  const KV_PTR_KEY = "hpbd_ptr_v4";
+  const NTFY_TOPIC = "hpbd_galaxy_3d_migi0410_v4";
 
   async function saveStateToCloudDb(payload) {
     // 1. Gọi Serverless API /api/storage (Hoạt động trên cả Vercel & Localhost server.py)
