@@ -253,7 +253,7 @@
           <span class="section-eyebrow">ARCHIVE EXHIBITION // 44 FRAMES</span>
           <h2 class="section-title">Bộ Sưu Tập Khoảnh Khắc</h2>
           <p class="section-desc">
-            Chạm vào từng bức ảnh để xem kích thước lớn hoặc nhấn nút Lật thẻ để đọc câu chuyện đằng sau mỗi kỷ niệm.
+            Nhấp trực tiếp vào tiêu đề bên dưới mỗi bức ảnh hoặc lật thẻ / mở ảnh lớn để chỉnh sửa tiêu đề và nội dung câu chuyện. Tự động lưu lên Cloud DB.
           </p>
 
           <div class="album-toolbar">
@@ -266,6 +266,12 @@
             </div>
 
             <div class="album-actions">
+              <button class="btn-outline-gold active-edit-pill" id="btn-toggle-edit-mode">
+                ✎ ĐANG BẬT SỬA TIÊU ĐỀ & NỘI DUNG
+              </button>
+              <button class="btn-outline-gold" id="btn-copy-share-link">
+                ⇪ LƯU & COPY LINK
+              </button>
               <button class="btn-outline-gold" id="btn-flip-all-polaroids">⇄ LẬT TẤT CẢ THẺ</button>
               <label class="btn-upload-inline" for="quick-photo-input">
                 <span>＋ THÊM ẢNH</span>
@@ -408,12 +414,42 @@
           <button class="btn-rotate-photo" id="btn-lightbox-rotate" title="Xoay bức hình 90°">↻ Xoay 90°</button>
         </div>
         <div class="lightbox-caption-panel">
+          <div class="edit-hint-banner">
+            <strong>SỬA TRỰC TIẾP:</strong> Nhấp vào <strong>Tiêu đề</strong>, <strong>Ngày chụp</strong> hoặc <strong>Nội dung</strong> bên dưới để chỉnh sửa. Tự động lưu lên Cloud DB.
+          </div>
           <div class="lightbox-meta-row">
             <span class="lightbox-index" id="lightbox-index">01 / 44</span>
-            <span class="lightbox-date" id="lightbox-date">2025</span>
+            <span
+              class="lightbox-date editable-field"
+              id="lightbox-date"
+              contenteditable="true"
+              spellcheck="false"
+              title="Nhấp để sửa ngày chụp"
+            >2025</span>
           </div>
-          <h3 class="lightbox-title" id="lightbox-title">Khoảnh khắc #01</h3>
-          <p class="lightbox-note" id="lightbox-note"></p>
+          <h3
+            class="lightbox-title editable-field"
+            id="lightbox-title"
+            contenteditable="true"
+            spellcheck="false"
+            title="Nhấp để sửa tiêu đề bức hình"
+          >Khoảnh khắc #01</h3>
+          <p
+            class="lightbox-note editable-field"
+            id="lightbox-note"
+            contenteditable="true"
+            spellcheck="false"
+            title="Nhấp để sửa nội dung câu chuyện"
+          ></p>
+          <div class="lightbox-category-row">
+            <label for="lightbox-category-select">Phân loại:</label>
+            <select id="lightbox-category-select" class="category-select">
+              <option value="sum-vay">Gặp gỡ</option>
+              <option value="du-lich">Hành trình</option>
+              <option value="ky-niem">Kỷ niệm</option>
+              <option value="nu-cuoi">Khoảnh khắc</option>
+            </select>
+          </div>
           <div class="lightbox-actions-bar">
             <button class="btn-slideshow-toggle" id="btn-lightbox-slideshow">
               ▶ TRÌNH CHIẾU TỰ ĐỘNG (SLIDESHOW)

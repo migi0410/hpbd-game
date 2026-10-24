@@ -1524,7 +1524,12 @@
         <div class="polaroid-inner">
           <div class="polaroid-front">
             <div class="polaroid-img-wrap" data-idx="${idx}">
-              <span class="polaroid-date-tag">${escapeHtml(dateBadgeText)}</span>
+              <span
+                class="polaroid-date-tag polaroid-editable"
+                contenteditable="true"
+                spellcheck="false"
+                title="Nhấp để sửa ngày chụp"
+              >${escapeHtml(dateBadgeText)}</span>
 
               <button class="polaroid-zoom-btn" type="button" title="Phóng to ảnh">⤢</button>
               <button class="polaroid-rotate-btn" type="button" title="Xoay ảnh 90°">↻</button>
@@ -1532,15 +1537,30 @@
               ${mediaHtml}
             </div>
             <div class="polaroid-footer">
-              <span class="polaroid-title">${escapeHtml(photo.title)}</span>
+              <span
+                class="polaroid-title polaroid-editable"
+                contenteditable="true"
+                spellcheck="false"
+                title="Nhấp để sửa tiêu đề bức hình"
+              >${escapeHtml(photo.title)}</span>
               <button class="btn-flip-card" type="button">⇄ Lật</button>
             </div>
           </div>
           <div class="polaroid-back">
             <div class="polaroid-back-ornament">${String(idx + 1).padStart(2, "0")} // ARCHIVE</div>
             <div>
-              <h4 class="polaroid-back-title">${escapeHtml(photo.title)}</h4>
-              <p class="polaroid-back-note">${escapeHtml(photo.note || "")}</p>
+              <h4
+                class="polaroid-back-title polaroid-editable"
+                contenteditable="true"
+                spellcheck="false"
+                title="Nhấp để sửa tiêu đề bức hình"
+              >${escapeHtml(photo.title)}</h4>
+              <p
+                class="polaroid-back-note polaroid-editable"
+                contenteditable="true"
+                spellcheck="false"
+                title="Nhấp để sửa nội dung câu chuyện của bức hình"
+              >${escapeHtml(photo.note || "")}</p>
             </div>
             <div class="polaroid-back-actions">
               <button class="btn-flip-card" type="button">↩ Ảnh</button>
@@ -1549,6 +1569,55 @@
           </div>
         </div>
       `;
+
+      // Ngăn click vào các vùng sửa chữ làm mở Lightbox
+      card.querySelectorAll("[contenteditable='true']").forEach((editEl) => {
+        editEl.addEventListener("click", (e) => e.stopPropagation());
+        editEl.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && !editEl.classList.contains("polaroid-back-note")) {
+            e.preventDefault();
+            editEl.blur();
+          }
+        });
+      });
+
+      // Sửa ngày chụp
+      const dateEl = card.querySelector(".polaroid-date-tag");
+      if (dateEl) {
+        dateEl.addEventListener("input", () => {
+          photo.date = dateEl.textContent.replace(/^▶ VIDEO •\s*/i, "").trim();
+          persistPhotoEdits();
+        });
+      }
+
+      // Sửa tiêu đề mặt trước & mặt sau đồng bộ
+      const frontTitleEl = card.querySelector(".polaroid-title");
+      const backTitleEl = card.querySelector(".polaroid-back-title");
+      if (frontTitleEl) {
+        frontTitleEl.addEventListener("input", () => {
+          photo.title = frontTitleEl.textContent.trim();
+          if (backTitleEl) backTitleEl.textContent = photo.title;
+          syncSingleCardUI(idx);
+          persistPhotoEdits();
+        });
+      }
+      if (backTitleEl) {
+        backTitleEl.addEventListener("input", () => {
+          photo.title = backTitleEl.textContent.trim();
+          if (frontTitleEl) frontTitleEl.textContent = photo.title;
+          syncSingleCardUI(idx);
+          persistPhotoEdits();
+        });
+      }
+
+      // Sửa nội dung câu chuyện mặt sau
+      const backNoteEl = card.querySelector(".polaroid-back-note");
+      if (backNoteEl) {
+        backNoteEl.addEventListener("input", () => {
+          photo.note = backNoteEl.textContent.trim();
+          persistPhotoEdits();
+        });
+      }
 
       // Nút xoay ảnh 90°
       const rotBtn = card.querySelector(".polaroid-rotate-btn");
@@ -1596,6 +1665,22 @@
   }
 
   function initAlbumControls() {
+    document.body.classList.add("direct-edit-enabled");
+
+    const toggleEditBtn = document.getElementById("btn-toggle-edit-mode");
+    if (toggleEditBtn) {
+      toggleEditBtn.addEventListener("click", () => {
+        const enabled = document.body.classList.toggle("direct-edit-enabled");
+        toggleEditBtn.classList.toggle("active-edit-pill", enabled);
+        toggleEditBtn.textContent = enabled
+          ? "✎ ĐANG BẬT SỬA TIÊU ĐỀ & NỘI DUNG"
+          : "👁 CHẾ ĐỘ XEM";
+        document.querySelectorAll(".polaroid-editable").forEach((el) => {
+          el.contentEditable = enabled ? "true" : "false";
+        });
+      });
+    }
+
     document.querySelectorAll(".filter-pill").forEach((pill) => {
       pill.addEventListener("click", () => {
         document.querySelectorAll(".filter-pill").forEach((p) => p.classList.remove("active"));
@@ -1885,6 +1970,11 @@
     setText("lightbox-date", item.date || "Kỷ niệm");
     setText("lightbox-title", item.title || `Khoảnh khắc #${state.lightboxIndex + 1}`);
     setText("lightbox-note", item.note || "");
+
+    const catSelect = document.getElementById("lightbox-category-select");
+    if (catSelect) {
+      catSelect.value = item.category || "ky-niem";
+    }
   }
 
   function startSlideshow() {
@@ -1913,6 +2003,52 @@
     const nextBtn = document.getElementById("btn-lightbox-next");
     const slideBtn = document.getElementById("btn-lightbox-slideshow");
     const rotateBtn = document.getElementById("btn-lightbox-rotate");
+
+    // Các trường sửa trực tiếp Tiêu đề, Ngày chụp, Nội dung trong Lightbox
+    const lbDate = document.getElementById("lightbox-date");
+    const lbTitle = document.getElementById("lightbox-title");
+    const lbNote = document.getElementById("lightbox-note");
+    const lbCat = document.getElementById("lightbox-category-select");
+
+    if (lbDate) {
+      lbDate.addEventListener("input", () => {
+        const item = allPhotos[state.lightboxIndex];
+        if (!item) return;
+        item.date = lbDate.textContent.trim();
+        syncSingleCardUI(state.lightboxIndex);
+        persistPhotoEdits();
+      });
+    }
+
+    if (lbTitle) {
+      lbTitle.addEventListener("input", () => {
+        const item = allPhotos[state.lightboxIndex];
+        if (!item) return;
+        item.title = lbTitle.textContent.trim();
+        syncSingleCardUI(state.lightboxIndex);
+        persistPhotoEdits();
+      });
+    }
+
+    if (lbNote) {
+      lbNote.addEventListener("input", () => {
+        const item = allPhotos[state.lightboxIndex];
+        if (!item) return;
+        item.note = lbNote.textContent.trim();
+        syncSingleCardUI(state.lightboxIndex);
+        persistPhotoEdits();
+      });
+    }
+
+    if (lbCat) {
+      lbCat.addEventListener("change", () => {
+        const item = allPhotos[state.lightboxIndex];
+        if (!item) return;
+        item.category = lbCat.value;
+        renderPolaroidAlbum(getActiveAlbumFilter());
+        persistPhotoEdits();
+      });
+    }
 
     if (rotateBtn) {
       rotateBtn.addEventListener("click", () => {

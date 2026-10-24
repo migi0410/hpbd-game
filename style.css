@@ -1954,12 +1954,24 @@ body {
   padding-left: 16px;
 }
 
-/* Chỉnh sửa trực tiếp */
+/* Chỉnh sửa trực tiếp Tiêu đề & Nội dung ảnh */
+.active-edit-pill {
+  background: rgba(229, 207, 163, 0.2) !important;
+  border-color: var(--gold-champagne) !important;
+  color: var(--gold-bright) !important;
+}
+
 .editable-field,
 .polaroid-editable {
+  cursor: text;
   border-radius: 4px;
   padding: 2px 5px;
   transition: background 0.2s ease;
+}
+
+body.direct-edit-enabled .polaroid-editable,
+.editable-field {
+  outline: 1px dashed rgba(229, 207, 163, 0.35);
 }
 
 .editable-field:focus,
