@@ -49,10 +49,6 @@
         <span class="tab-idx">04</span>
         <span class="tab-label">GALLERY</span>
       </button>
-      <button class="stage-tab" data-target="stage-letter">
-        <span class="tab-idx">05</span>
-        <span class="tab-label">LETTER</span>
-      </button>
     </nav>
 
     <div class="nav-actions">
@@ -284,68 +280,6 @@
         <div class="polaroid-grid" id="polaroid-grid"></div>
       </div>
     </section>
-
-    <!-- =====================================================================
-         04. THƯ CHÚC MỪNG & LỜI NHẮN (EDITORIAL MESSAGE)
-         ===================================================================== -->
-    <section id="stage-letter" class="stage-section">
-      <div class="section-container">
-        <div class="section-header">
-          <span class="section-eyebrow">PERSONAL NOTE // DEDICATION</span>
-          <h2 class="section-title">Lời Chúc Sinh Nhật</h2>
-          <p class="section-desc">
-            Bạn có thể nhấp trực tiếp vào nội dung bức thư bên dưới để chỉnh sửa theo ý muốn.
-          </p>
-        </div>
-
-        <div class="envelope-stage">
-          <div class="envelope-wrapper opened" id="envelope-wrapper">
-            <div class="letter-paper" id="letter-paper">
-              <div class="letter-ornament-top">23 . 10 . 2026</div>
-              <h3
-                class="letter-greeting polaroid-editable"
-                id="letter-greeting"
-                contenteditable="true"
-                spellcheck="false"
-              >Chúc mừng sinh nhật,</h3>
-              <div
-                class="letter-body polaroid-editable"
-                id="letter-body-content"
-                contenteditable="true"
-                spellcheck="false"
-              ></div>
-              <div class="letter-footer">
-                <p
-                  class="letter-closing polaroid-editable"
-                  id="letter-closing"
-                  contenteditable="true"
-                  spellcheck="false"
-                >Best wishes,</p>
-                <p
-                  class="letter-signature polaroid-editable"
-                  id="letter-signature"
-                  contenteditable="true"
-                  spellcheck="false"
-                >From Family</p>
-              </div>
-              <div class="letter-controls">
-                <button class="btn-text-gold" id="btn-skip-typing">HIỆN TOÀN BỘ</button>
-                <button class="btn-text-gold" id="btn-replay-typing">CHẠY HIỆU ỨNG CHỮ</button>
-              </div>
-            </div>
-            <button class="wax-seal-btn hidden" id="btn-open-envelope" aria-label="Mở thư"></button>
-          </div>
-        </div>
-
-        <div class="wishes-wall-section">
-          <div class="wishes-wall-header">
-            <h3>LỜI CHÚC KỶ NIỆM</h3>
-            <button class="btn-outline-gold" id="btn-add-wish-modal">＋ THÊM LỜI CHÚC</button>
-          </div>
-          <div class="wishes-grid" id="wishes-grid"></div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <!-- =====================================================================
@@ -531,33 +465,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal viết thêm lời chúc -->
-  <div class="modal-overlay hidden" id="wish-modal" role="dialog" aria-modal="true">
-    <div class="modal-card small-modal">
-      <div class="modal-header">
-        <h3>THÊM LỜI CHÚC MỚI</h3>
-        <button class="modal-close-btn" id="btn-close-wish-modal">✕</button>
-      </div>
-      <div class="modal-body">
-        <form id="add-wish-form" class="custom-form">
-          <label>
-            <span>Tiêu đề / Người gửi:</span>
-            <input type="text" id="wish-sender-input" required placeholder="Nhập tên hoặc tiêu đề..." />
-          </label>
-          <label>
-            <span>Ký hiệu / Ghi chú ngắn:</span>
-            <input type="text" id="wish-role-input" placeholder="VD: 04" />
-          </label>
-          <label>
-            <span>Nội dung lời chúc:</span>
-            <textarea id="wish-message-input" rows="4" required placeholder="Nhập nội dung lời chúc..."></textarea>
-          </label>
-          <button type="submit" class="btn-primary-gold full-width">LƯU LỜI CHÚC</button>
-        </form>
       </div>
     </div>
   </div>
